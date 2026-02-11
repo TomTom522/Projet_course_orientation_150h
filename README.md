@@ -52,34 +52,34 @@ Nature des logs envoyé a wazuh : Le logiciel agira comme un agent de sécurité
 
 ### Liste des tâches
 #### PHASE 1 : ANALYSE & CONCEPTION LOGICIELLE (Semaines 1 & 2)
-Semaine 1- J1 à J3 : Étude des protocoles de communication série. Analyse du format des trames reçues de la passerelle LoRa.
-Semaine 1- J4 à J5 : Choix et installation de l'environnement (Python, PyQt6, PySerial). Étude de la bibliothèque tkintermapview pour la cartographie.
-Semaine 2- J1 à J3 : Modélisation UML spécifique au logiciel PC :
-Diagramme de Classes (Gestion des coureurs, des balises et des alertes).
-Diagramme d'États (États de la course : En attente, En cours, Terminé).
-Semaine 2 - J4 à J5 : Définition de l'interface utilisateur (Mockup/Maquettes IHM) pour le tableau de bord de l'organisateur.
-revue de projet 1 le 9 février
+- Semaine 1- J1 à J3 : Étude des protocoles de communication série. Analyse du format des trames reçues de la passerelle LoRa.
+- Semaine 1- J4 à J5 : Choix et installation de l'environnement (Python, PyQt6, PySerial). Étude de la bibliothèque tkintermapview pour la cartographie.
+- Semaine 2- J1 à J3 : Modélisation UML spécifique au logiciel PC :
+- Diagramme de Classes (Gestion des coureurs, des balises et des alertes).
+- Diagramme d'États (États de la course : En attente, En cours, Terminé).
+- Semaine 2 - J4 à J5 : Définition de l'interface utilisateur (Mockup/Maquettes IHM) pour le tableau de bord de l'organisateur.
+- revue de projet 1 le 9 février
 #### PHASE 2 : ACQUISITION RADIO & TRAITEMENT (Semaines 3 à 5)
-Semaine 3-J1 à J5 : Développement du module de communication série (PySerial). Lecture du flux de données provenant de la passerelle USB/LoRa.
-Semaine 4-J1 à J5 : Algorithme de décodage (Parsing) : Transformation des trames CSV reçues en objets Python exploitables.
-Semaine 5-J1 à J5 : Logique de gestion de course (Côté PC) :
-Vérification du passage aux balises (Mode Linéaire).
-Calcul des points en temps réel (Mode Score).
-Déclenchement des alertes (Inactivité prolongée, batterie basse).
+- Semaine 3-J1 à J5 : Développement du module de communication série (PySerial). Lecture du flux de données provenant de la passerelle USB/LoRa.
+- Semaine 4-J1 à J5 : Algorithme de décodage (Parsing) : Transformation des trames CSV reçues en objets Python exploitables.
+- Semaine 5-J1 à J5 : Logique de gestion de course (Côté PC) :
+- Vérification du passage aux balises (Mode Linéaire).
+- Calcul des points en temps réel (Mode Score).
+- Déclenchement des alertes (Inactivité prolongée, batterie basse).
 #### PHASE 3 : IHM & CARTOGRAPHIE (Semaines 6 à 8)
-Semaine 6-J1 à J5 : Développement de l'IHM avec PyQt6 : Tableau de bord principal avec liste des participants et chronomètres.
-Semaine 7-J1 à J5 : Intégration de la carte :
-Affichage de la carte et placement des balises (coordonnées GPS).
-Mise à jour dynamique de la position des coureurs sur la carte.
-Semaine 8-J1 à S9-J2 : Gestion du mode hors-ligne : Script de mise en cache (téléchargement) des tuiles de la carte pour une utilisation en forêt sans internet.
-revue de projet 2 le 31 mars
+- Semaine 6-J1 à J5 : Développement de l'IHM avec PyQt6 : Tableau de bord principal avec liste des participants et chronomètres.
+- Semaine 7-J1 à J5 : Intégration de la carte :
+- Affichage de la carte et placement des balises (coordonnées GPS).
+- Mise à jour dynamique de la position des coureurs sur la carte.
+- Semaine 8-J1 à S9-J2 : Gestion du mode hors-ligne : Script de mise en cache (téléchargement) des tuiles de la carte pour une utilisation en forêt sans internet.
+- revue de projet 2 le 31 mars
 #### PHASE 4 : CYBERSÉCURITÉ & INTÉGRATION SIEM (Semaine 9 & 10)
-Semaine 9-J3 à J5 : Sécurisation logicielle :
-Implémentation du calcul de Checksum/CRC pour vérifier que les trames radio n'ont pas été corrompues.
-Audit de sécurité des bibliothèques tierces utilisées.
-Semaine 10-J1 à J5 : Exportation des logs et métriques (Projet de groupe) :
-Génération de fichiers de logs au format JSON.
-Configuration du transfert des logs de sécurité vers le serveur Wazuh (géré par l'étudiant 1).
+- Semaine 9-J3 à J5 : Sécurisation logicielle :
+- Implémentation du calcul de Checksum/CRC pour vérifier que les trames radio n'ont pas été corrompues.
+- Audit de sécurité des bibliothèques tierces utilisées.
+- Semaine 10-J1 à J5 : Exportation des logs et métriques (Projet de groupe) :
+- Génération de fichiers de logs au format JSON.
+- Configuration du transfert des logs de sécurité vers le serveur Wazuh (géré par l'étudiant 1).
 #### PHASE 5 : VALIDATION & LIVRABLES (Semaines 11 & 12)
 - Semaine 11-J1 à J3 : Tests de charge : Simulation de réception massive de trames pour tester la stabilité de l'IHM.
 - Semaine 11-J4 à J5 : Recette technique : Test de portée et de réception en conditions réelles (forêt).
