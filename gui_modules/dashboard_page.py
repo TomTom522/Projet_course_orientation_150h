@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QCursor
 from gui_modules.map_page import MapPage
 
 class StatusCard(QFrame):
@@ -36,40 +37,130 @@ class Cartemeteo(QFrame):
     def __init__(self):
         super().__init__()
         self.setFixedWidth(350)
-        self.setFixedHeight(120)
-        self.setStyleSheet("""
-            QFrame { 
-                background-color: #34C25A; 
-                border-radius: 8px; 
-                color: white;
-                margin: 2px;
-            }
-            QLabel { border: none; background: transparent; color: white; }
-        """)
-        
-        layout = QHBoxLayout(self)
-        
-        # Section Gauche : Icone et Température
-        self.lbl_temp = QLabel("--°C")
-        self.lbl_temp.setStyleSheet("font-size: 28px; font-weight: bold;")
-        layout.addWidget(self.lbl_temp)
+        self.donnees_forecast = []
+        self.jour_selectionne = 0
 
-        # Section Droite : Détails de la météo
+        self.setObjectName("MeteoCard")
+        self.setStyleSheet("""
+            QFrame#MeteoCard { background-color: #34C25A; border-radius: 8px; margin: 2px; }
+            QLabel { border: none; background: transparent; color: white; }
+            QPushButton#JourBtn {
+                background-color: rgba(255,255,255,0.25);
+                color: white; font-weight: bold; font-size: 11px;
+                padding: 4px 8px; border-radius: 5px; border: none;
+            }
+            QPushButton#JourBtn:checked { background-color: white; color: #27ae60; }
+            QPushButton#JourBtn:hover { background-color: rgba(255,255,255,0.4); }
+        """)
+
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(12, 10, 12, 10)
+        main_layout.setSpacing(6)
+
+        # Boutons de sélection du jour
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(5)
+        self.btn_jours = []
+        for i, nom in enumerate(["Auj.", "Demain", "J+2", "J+3"]):
+            btn = QPushButton(nom)
+            btn.setObjectName("JourBtn")
+            btn.setCheckable(True)
+            btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            btn.clicked.connect(lambda checked, idx=i: self.changer_jour(idx))
+            self.btn_jours.append(btn)
+            btn_layout.addWidget(btn)
+        self.btn_jours[0].setChecked(True)
+        main_layout.addLayout(btn_layout)
+
+        # Température + détails
+        info_layout = QHBoxLayout()
+        self.lbl_temp = QLabel("--°C")
+        self.lbl_temp.setStyleSheet("font-size: 28px; font-weight: bold; color: white;")
+        info_layout.addWidget(self.lbl_temp)
+
         details_layout = QVBoxLayout()
         self.lbl_city = QLabel("Météo à Rodez")
-        self.lbl_city.setStyleSheet("font-weight: bold; font-size: 18px;")
+        self.lbl_city.setStyleSheet("font-weight: bold; font-size: 14px; color: white;")
         self.lbl_desc = QLabel("Chargement...")
-        self.lbl_desc.setStyleSheet("font-weight: bold; font-size: 14px;")
+        self.lbl_desc.setStyleSheet("font-size: 12px; color: white;")
         self.lbl_wind = QLabel("Vent: -- km/h")
-        self.lbl_wind.setStyleSheet("font-weight: bold; font-size: 14px;")
+        self.lbl_wind.setStyleSheet("font-size: 12px; color: white;")
         self.lbl_hum = QLabel("Humidité: --%")
-        self.lbl_hum.setStyleSheet("font-weight: bold; font-size: 14px;")
-        
+        self.lbl_hum.setStyleSheet("font-size: 12px; color: white;")
         details_layout.addWidget(self.lbl_city)
         details_layout.addWidget(self.lbl_desc)
         details_layout.addWidget(self.lbl_wind)
         details_layout.addWidget(self.lbl_hum)
-        layout.addLayout(details_layout)
+        info_layout.addLayout(details_layout)
+        main_layout.addLayout(info_layout)
+
+        # Indicateur course (texte uniquement, pas de changement de couleur)
+        self.lbl_course = QLabel("⏳ Chargement de l'analyse...")
+        self.lbl_course.setWordWrap(True)
+        self.lbl_course.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_course.setStyleSheet("""
+            color: white; font-weight: bold; font-size: 12px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px; padding: 4px 8px;
+        """)
+        main_layout.addWidget(self.lbl_course)
+
+    def changer_jour(self, index):
+        self.jour_selectionne = index
+        for i, btn in enumerate(self.btn_jours):
+            btn.setChecked(i == index)
+        if self.donnees_forecast:
+            self.afficher_jour(index)
+
+    def afficher_jour(self, index):
+        if index >= len(self.donnees_forecast):
+            return
+        day = self.donnees_forecast[index]
+
+        if index == 0 and hasattr(self, '_current_data'):
+            cur = self._current_data
+            self.lbl_temp.setText(f"{cur['temp_c']}°C")
+            self.lbl_desc.setText(cur['condition']['text'])
+            self.lbl_wind.setText(f"Vent: {cur['wind_kph']} km/h")
+            self.lbl_hum.setText(f"Humidité: {cur['humidity']}%")
+        else:
+            d = day['day']
+            self.lbl_temp.setText(f"{d['mintemp_c']}°C / {d['maxtemp_c']}°C")
+            self.lbl_desc.setText(d['condition']['text'])
+            self.lbl_wind.setText(f"Vent max: {d['maxwind_kph']} km/h")
+            self.lbl_hum.setText(f"Humidité: {d['avghumidity']}%")
+
+        self._evaluer_course(day)
+
+    def _evaluer_course(self, day):
+        d = day['day']
+        vent = d['maxwind_kph']
+        pluie_chance = d.get('daily_chance_of_rain', 0)
+        pluie_mm = d.get('totalprecip_mm', 0)
+        vis = d.get('avgvis_km', 10)
+
+        problemes = []
+        if vent > 50:
+            problemes.append(f"vent fort ({vent:.0f} km/h)")
+        if pluie_chance > 60:
+            problemes.append(f"risque pluie ({pluie_chance}%)")
+        if pluie_mm > 5:
+            problemes.append(f"fortes précipitations ({pluie_mm:.0f}mm)")
+        if vis < 3:
+            problemes.append(f"visibilité faible ({vis:.0f}km)")
+
+        if not problemes:
+            self.lbl_course.setText("Conditions favorables pour une course !")
+        elif len(problemes) == 1:
+            self.lbl_course.setText(f"Attention : {problemes[0]}")
+        else:
+            self.lbl_course.setText(f"Déconseillé : {', '.join(problemes)}")
+
+    def mettre_a_jour(self, current_data, forecast_days):
+        self._current_data = current_data
+        self.donnees_forecast = forecast_days
+        self.afficher_jour(self.jour_selectionne)
+
 
 class DashboardPage(QWidget):
     # Permet d'envoyer les logs à la page Historique globale !
@@ -148,6 +239,7 @@ class DashboardPage(QWidget):
 
         # Section du bas avec l'intégration du bouton
         bottom_section = QWidget()
+        bottom_section.setMinimumHeight(250)
         bottom_layout = QHBoxLayout(bottom_section)
 
         self.table_team = self.create_table(["Equipe/Balise", "Latitude", "Longitude", "Batterie", "Scenario"])
@@ -212,18 +304,17 @@ class DashboardPage(QWidget):
 
     def mise_a_jour_meteo(self):
         api_key = "a6f6fef1470f473cb0694459230605"
-        url = f"http://api.weatherapi.com/v1/current.json?key={api_key}&q=Rodez&lang=fr"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q=Rodez&lang=fr&days=4"
         
         try:
             res = requests.get(url, timeout=5)
             if res.status_code == 200:
                 data = res.json()
-                curr = data['current']
-                
-                self.weather_card.lbl_temp.setText(f"{curr['temp_c']}°C")
-                self.weather_card.lbl_desc.setText(curr['condition']['text'])
-                self.weather_card.lbl_wind.setText(f"Vent: {curr['wind_kph']} km/h")
-                self.weather_card.lbl_hum.setText(f"Humidité: {curr['humidity']}%")
+                current = data['current']
+                forecast_days = data['forecast']['forecastday']
+                self.weather_card.mettre_a_jour(current, forecast_days)
+            else:
+                print(f"Erreur météo code: {res.status_code}")
         except Exception as e:
             print(f"Erreur météo: {e}")
 

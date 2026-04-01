@@ -4,6 +4,7 @@ import requests
 import time
 import random
 import config
+import re
 from PyQt6.QtCore import QThread, pyqtSignal
 
 # LoraThread hérite de QThread. C'est un processus qui tourne en parallèle de ton interface.
@@ -68,34 +69,71 @@ class LoraThread(QThread):
                     # S'il y a des données qui attendent dans le port USB
                     if ser.in_waiting > 0:
                         try:
-                            # On lit la ligne, la décode en UTF-8, et on enlève les espaces vides (.strip())
+                            # On lit la ligne, la décode en UTF-8, et on enlève les espaces vides
                             line = ser.readline().decode('utf-8', errors='replace').strip()
-                            if not line: continue
+                            if not line: 
+                                continue
                             
-                            # On transforme le texte JSON reçu du microcontrôleur en dictionnaire Python
-                            data = json.loads(line)
-                            print(f"[LORA RECU] {data}")
-                             
-                            # Si le dico contient 'lat' et 'lon', on émet le signal GPS
-                            if 'lat' in data and 'lon' in data:
-                                self.position_signal.emit(float(data['lat']), float(data['lon']), str(data.get('id', '1')))
+                            # --- 1. DÉTECTION DU MESSAGE RFID (TEXTE BRUT) ---
+                            # On cherche le format : "Message reçu du node X : XX XX XX..."
+                            rfid_match = re.search(r"Message reçu du node (\d+)\s*:\s*(.*)", line)
                             
-                            # Si le dico contient 'batterie', on émet le signal batterie
-                            if 'batterie' in data:
-                                self.battery_signal.emit(f"{data['batterie']}%")
-                            
-                            # Si le dico contient 'rfid', on émet le signal RFID
-                            if 'rfid' in data:
-                                self.rfid_signal.emit(str(data['rfid']))
+                            if rfid_match:
+                                node_id = rfid_match.group(1)
+                                rfid_tag_brut = rfid_match.group(2).strip().upper()
+                                
 
-                            # On envoie également ces données vers la base de données via l'API
-                            self._send_api(data)
+                                # --- DÉécodage du double héxadéciamal pour avoir le bon RFID ---
+                                try:
+                                    # 1. On transforme "46 41 34" en "FA4"
+                                    tag_lettres = "".join([chr(int(x, 16)) for x in rfid_tag_brut.split()])
+                                    # 2. On remet les espaces tous les 2 caractères pour avoir "FA 48 8D 2E"
+                                    rfid_tag = " ".join([tag_lettres[i:i+2] for i in range(0, len(tag_lettres), 2)])
+                                except Exception:
+                                    # Sécurité : si un jour l'antenne envoie le bon format direct, on ne plante pas
+                                    rfid_tag = rfid_tag_brut 
+
+                                print(f"[RFID DÉTECTÉ] Node: {node_id} | Tag: {rfid_tag}")
+                                # On envoie le tag à main.py pour traitement et sauvegarde JSON
+                                self.rfid_signal.emit(rfid_tag)
+                                continue # On passe à la ligne suivante, pas besoin de tester le JSON
+
+                            # --- 2. DÉTECTION DES DONNÉES GPS/BATTERIE (JSON) ---
+                            # On ne tente le JSON que si la ligne commence par une accolade
+                            if line.startswith('{'):
+                                try:
+                                    data = json.loads(line)
+                                    print(f"[LORA RECU] {data}")
+                                    
+                                    # Signal GPS
+                                    if 'lat' in data and 'lon' in data:
+                                        self.position_signal.emit(float(data['lat']), float(data['lon']), str(data.get('id', '1')))
+                                    
+                                    # Signal Batterie
+                                    if 'batterie' in data:
+                                        self.battery_signal.emit(f"{data['batterie']}%")
+                                    
+                                    # Signal RFID (si envoyé sous forme de JSON par une autre balise)
+                                    if 'rfid' in data:
+                                        self.rfid_signal.emit(str(data['rfid']))
+
+                                    # Envoi vers la base de données (API Docker)
+                                    self._send_api(data)
+                                    
+                                except json.JSONDecodeError:
+                                    print(f"[ERREUR JSON] Ligne corrompue : {line}")
+                            else:
+                                # Si ce n'est ni du RFID connu, ni du JSON, c'est un message de debug
+                                print(f"[DEBUG ESP32] {line}")
 
                             # Petite pause pour ne pas surcharger le processeur
-                            time.sleep(0.1)
+                            time.sleep(0.05)
+
                         except Exception as e:
-                            print(f"Erreur ligne: {e}")
-                    time.sleep(0.1)
+                            print(f"Erreur de traitement ligne: {e}")
+                    time.sleep(0.01) # Fréquence d'écoute du port série
+            
+            # CE BLOC ÉTAIT MANQUANT
             except Exception as e:
                 # Si le port n'est pas trouvé (antenne débranchée par ex.)
                 self.status_signal.emit("ERREUR PORT", "red")
@@ -119,4 +157,4 @@ class LoraThread(QThread):
                 # Requête PUT pour modifier la position actuelle de la balise dans la BDD
                 requests.put(url, json={"latitude": float(data['lat']), "longitude": float(data['lon'])}, headers=headers, timeout=2)
         except Exception as e:
-            pass # On ignore les erreurs API 
+            pass # On ignore les erreurs API

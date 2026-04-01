@@ -1,5 +1,7 @@
 import requests
 import config
+import json
+import os
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, 
                              QFrame, QLabel, QLineEdit, QPushButton, QTableWidget, 
                              QHeaderView, QTableWidgetItem, QMessageBox, QApplication)
@@ -117,11 +119,29 @@ class EquipePage(QWidget):
         self.charger_equipes_api()
 
     def remplir_rfid(self):
-        if self.dernier_rfid_recu:
-            self.in_rfid.setText(self.dernier_rfid_recu)
-            self.in_rfid.setStyleSheet("border: 2px solid #2ecc71; background-color: #e8f8f5; color: black; padding: 10px; border-radius: 6px; font-weight: bold;")
-        else:
-            QMessageBox.information(self, "Scan en cours", "Aucun badge détecté.\nVeuillez passer un badge devant la balise LoRa d'abord.")
+        chemin_fichier = r'C:\Users\Admin\Desktop\projet_150h\Projet_5_py6ql\supervision\transfer\donnees_rfid.json'
+        
+        
+        # 1. On va chercher le fichier JSON
+        if os.path.exists(chemin_fichier):
+            try:
+                with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                    donnees = json.load(f)
+                
+                # 2. S'il y a des données, on prend la toute dernière (index -1)
+                if len(donnees) > 0:
+                    derniere_lecture = donnees[-1]
+                    dernier_badge = derniere_lecture.get("rfid_tag", "")
+                    
+                    if dernier_badge:
+                        self.in_rfid.setText(dernier_badge)
+                        self.in_rfid.setStyleSheet("border: 2px solid #2ecc71; background-color: #e8f8f5; color: black; padding: 10px; border-radius: 6px; font-weight: bold;")
+                        return # Succès, on quitte la fonction
+            except Exception as e:
+                print(f"Erreur JSON : {e}")
+
+        # Si le fichier n'existe pas ou est vide
+        QMessageBox.information(self, "Scan en cours", "Aucun badge trouvé dans le fichier JSON.\nVeuillez passer un badge devant la balise LoRa d'abord.")
     
     def capter_nouveau_badge(self, rfid_lu):
         self.dernier_rfid_recu = rfid_lu

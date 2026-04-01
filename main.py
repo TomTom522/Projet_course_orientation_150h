@@ -1,4 +1,8 @@
 import sys
+import json
+import os
+from datetime import datetime
+
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame)
 from PyQt6.QtCore import Qt
@@ -178,13 +182,40 @@ class MainWindow(QMainWindow):
 
     # --- Réception du badge RFID ---
     def handle_rfid(self, code_rfid):
-        # 1. On sauvegarde le code et on l'envoie à l'interface Équipe
-        self.page_equipe.dernier_rfid_recu = code_rfid
-        self.page_equipe.remplir_rfid() # Déclenche l'affichage visuel
+        # 1. Enregistrement dans le fichier JSON (Historique) de façon robuste
+        dossier_courant = os.path.dirname(os.path.abspath(__file__))
+        dossier_transfer = os.path.join(dossier_courant, 'transfer')
         
-        # 2. Ajout dans l'historique (Couleur Violette pour bien le voir)
-        self.page_history.add_log("Scanner LoRa", "Lecture Badge RFID", f"Code scanné : {code_rfid}", "#8e44ad")
+        # On crée le dossier 'transfer' s'il n'existe pas
+        if not os.path.exists(dossier_transfer):
+            os.makedirs(dossier_transfer)
+            
+        chemin_fichier = os.path.join(dossier_transfer, 'donnees_rfid.json')
+        
+        donnees = []
+        if os.path.exists(chemin_fichier):
+            try:
+                with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                    donnees = json.load(f)
+            except:
+                pass
+        
+        nouvelle_lecture = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "node_id": "Scanner USB", 
+            "rfid_tag": code_rfid
+        }
+        donnees.append(nouvelle_lecture)
+        
+        with open(chemin_fichier, 'w', encoding='utf-8') as f:
+            json.dump(donnees, f, indent=4)
 
+        # 2. Mise à jour de l'interface
+        self.page_equipe.dernier_rfid_recu = code_rfid
+        self.page_equipe.remplir_rfid()
+        
+        # 3. Ajout dans le tableau historique
+        self.page_history.add_log("Scanner", "Détection RFID", f"Badge {code_rfid} scanné", "#8e44ad")
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     profile = QWebEngineProfile.defaultProfile()
