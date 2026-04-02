@@ -1,5 +1,5 @@
 # config.py
-SERIAL_PORT = "SIMULATEUR" 
+SERIAL_PORT = "COM3" 
 BAUD_RATE = 115200
 
 # URL de l'API Docker

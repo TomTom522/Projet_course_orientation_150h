@@ -1,0 +1,242 @@
+[
+    {
+        "timestamp": "2026-03-30 14:56:35",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 14:56:46",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 14:57:26",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 14:57:41",
+        "node_id": 3,
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-03-30 14:57:50",
+        "node_id": 3,
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-03-30 15:08:50",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 15:09:01",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 15:09:03",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 15:09:20",
+        "node_id": 3,
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-03-30 16:17:55",
+        "node_id": 3,
+        "rfid_tag": "38 34 38 46 39 44 31 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:18:52",
+        "node_id": "Scanner USB",
+        "rfid_tag": "46 41 34 38 38 44 32 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:19:03",
+        "node_id": "Scanner USB",
+        "rfid_tag": "46 41 34 38 38 44 32 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:19:06",
+        "node_id": "Scanner USB",
+        "rfid_tag": "46 41 34 38 38 44 32 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:19:18",
+        "node_id": "Scanner USB",
+        "rfid_tag": "38 34 38 46 39 44 31 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:19:23",
+        "node_id": "Scanner USB",
+        "rfid_tag": "41 34 45 41 37 41 31 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:19:26",
+        "node_id": "Scanner USB",
+        "rfid_tag": "46 41 34 38 38 44 32 45"
+    },
+    {
+        "timestamp": "2026-03-31 16:24:41",
+        "node_id": "Scanner USB",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:24:55",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:26:58",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:48:50",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:27",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:29",
+        "node_id": "Scanner USB",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:31",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:37",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:39",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:44",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-03-31 16:55:55",
+        "node_id": "Scanner USB",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-03-31 17:06:07",
+        "node_id": "Scanner USB",
+        "rfid_tag": "FA 48 8D 2E"
+    },
+    {
+        "timestamp": "2026-03-31 17:06:11",
+        "node_id": "Scanner USB",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 14:29:39",
+        "node_id": "Scanner USB",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-04-01 14:29:57",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-04-01 14:40:03",
+        "node_id": "3",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-04-01 14:40:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:07:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:14:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:04",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:15:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:29:00",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:30:24",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:30:31",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:36:19",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:45:56",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:47:01",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:01",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:22",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:24",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    }
+]
