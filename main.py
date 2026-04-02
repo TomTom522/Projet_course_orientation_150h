@@ -2,9 +2,11 @@ import sys
 import json
 import os
 from datetime import datetime
+import serial.tools.list_ports
+import config # <-- AJOUT IMPORTANT pour pouvoir modifier le port en direct
 
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
-                             QHBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame)
+                             QHBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame, QComboBox) # <-- Ajout de QComboBox ici
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
 from PyQt6.QtWebEngineCore import QWebEngineProfile
@@ -50,6 +52,16 @@ class MainWindow(QMainWindow):
                 border-bottom: 3px solid #27ae60;
                 background-color: transparent;
             }
+            /* Style pour le menu déroulant des ports */
+            QComboBox {
+                background-color: #f8fafc;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                padding: 5px 10px;
+                font-weight: bold;
+                color: #334155;
+            }
+            QComboBox::drop-down { border: none; }
         """)
 
         # Widget Principal
@@ -81,7 +93,7 @@ class MainWindow(QMainWindow):
         self.btn_history = QPushButton("Historique")
 
         # Liste des boutons pour appliquer le style et la logique
-        self.nav_buttons = [self.btn_config, self.btn_equipe,self.btn_scenario, self.btn_dash, self.btn_history]
+        self.nav_buttons = [self.btn_config, self.btn_equipe, self.btn_scenario, self.btn_dash, self.btn_history]
 
         for btn in self.nav_buttons:
             btn.setObjectName("NavBtn")
@@ -92,6 +104,18 @@ class MainWindow(QMainWindow):
             h_layout.addWidget(btn)
 
         h_layout.addStretch()
+        
+        # --- AJOUT DU MENU DÉROULANT DES PORTS COM ---
+        self.combo_ports = QComboBox()
+        self.combo_ports.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.combo_ports.setFixedWidth(150)
+        h_layout.addWidget(self.combo_ports)
+        
+        # On remplit la liste
+        self.rafraichir_ports_com()
+        # On connecte le changement à notre fonction
+        self.combo_ports.currentTextChanged.connect(self.changer_port_com)
+
         main_layout.addWidget(header)
 
         # --- 2. STACKED WIDGET ---
@@ -114,19 +138,50 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.page_history)   # Index 4
 
         # --- 3. CONNEXIONS DES BOUTONS ---
-        self.btn_config.clicked.connect(lambda: self.switch_page(0))
-        self.btn_equipe.clicked.connect(lambda: self.switch_page(1))
-        self.btn_scenario.clicked.connect(lambda: self.switch_page(2))
-        self.btn_dash.clicked.connect(lambda: self.switch_page(3))
-        self.btn_history.clicked.connect(lambda: self.switch_page(4))
+        self.btn_config.clicked.connect(lambda: self.changer_page(0))
+        self.btn_equipe.clicked.connect(lambda: self.changer_page(1))
+        self.btn_scenario.clicked.connect(lambda: self.changer_page(2))
+        self.btn_dash.clicked.connect(lambda: self.changer_page(3))
+        self.btn_history.clicked.connect(lambda: self.changer_page(4))
 
         # Page par défaut au démarrage (Dashboard Live)
-        self.switch_page(3)
+        self.changer_page(3)
 
         # --- 4. LANCEMENT DU THREAD LORA ---
-        self.start_lora_communication()
+        self.lancer_lora_communication()
 
-    def switch_page(self, index):
+    def rafraichir_ports_com(self):
+        """Scanne les ports USB et remplit la liste déroulante"""
+        # On désactive la détection le temps de remplir pour ne pas déclencher 50 fois l'événement
+        self.combo_ports.blockSignals(True)
+        self.combo_ports.clear()
+        
+        self.combo_ports.addItem("SIMULATEUR")
+        
+        ports = serial.tools.list_ports.comports()
+        for port in ports:
+            self.combo_ports.addItem(port.device)
+            
+        if config.SERIAL_PORT in [self.combo_ports.itemText(i) for i in range(self.combo_ports.count())]:
+            self.combo_ports.setCurrentText(config.SERIAL_PORT)
+            
+        self.combo_ports.blockSignals(False)
+
+    def changer_port_com(self, nouveau_port):
+        """Met à jour la configuration et relance le thread"""
+        if nouveau_port:
+            config.SERIAL_PORT = nouveau_port
+            print(f"[*] Port modifié, redémarrage sur : {nouveau_port}")
+            
+            # On arrête proprement le thread actuel
+            if hasattr(self, 'thread') and self.thread.isRunning():
+                self.thread.terminate()
+                self.thread.wait()
+            
+            # On relance (la fonction recrée le thread et reconnecte les signaux)
+            self.lancer_lora_communication()
+
+    def changer_page(self, index):
         """Change la page affichée et gère l'apparence des boutons"""
         self.stack.setCurrentIndex(index)
         
@@ -137,29 +192,29 @@ class MainWindow(QMainWindow):
         self.btn_dash.setChecked(index == 3)
         self.btn_history.setChecked(index == 4)
 
-    def start_lora_communication(self):
+    def lancer_lora_communication(self):
         """Initialise et lance la lecture du port série via le thread"""
         self.thread = LoraThread()
-        self.thread.position_signal.connect(self.handle_gps)
-        self.thread.battery_signal.connect(self.handle_battery)
-        self.thread.status_signal.connect(self.handle_status)
+        self.thread.position_signal.connect(self.gerer_gps)
+        self.thread.battery_signal.connect(self.gerer_batterie)
+        self.thread.status_signal.connect(self.gerer_status)
         
         # --- Connexion du signal RFID ---
-        self.thread.rfid_signal.connect(self.handle_rfid)
+        self.thread.rfid_signal.connect(self.gerer_rfid)
         
         # --- Pré-remplir le formulaire de création de balise ---
         self.thread.position_signal.connect(self.page_config.pre_remplir_donnees_lora)
         
         self.thread.start()
 
-    # --- HANDLERS ---
-    def handle_gps(self, lat, lon, balise_id):
+    # --- MÉTHODES DE GESTION DES SIGNAUX ---
+    def gerer_gps(self, lat, lon, balise_id):
         # 1. Mise à jour du Dashboard
         self.page_dashboard.update_dashboard_data(lat, lon, None, balise_id)
         # 2. Ajout dans l'historique (Couleur bleue)
         self.page_history.add_log(balise_id, "Position GPS", f"Lat: {lat:.5f}, Lon: {lon:.5f}", "#2980b9")
 
-    def handle_battery(self, val_str):
+    def gerer_batterie(self, val_str):
         try:
             val_int = int(val_str.replace("%", "").strip())
             # 1. Mise à jour du Dashboard
@@ -171,7 +226,7 @@ class MainWindow(QMainWindow):
         except:
             pass
             
-    def handle_status(self, text, color):
+    def gerer_status(self, text, color):
         if hasattr(self.page_dashboard, 'card_deco'):
             status = "CONNECTÉ" in text
             self.page_dashboard.card_deco.set_status(status)
@@ -181,7 +236,7 @@ class MainWindow(QMainWindow):
             self.page_history.add_log("Système", "Statut USB LoRa", text, "#7f8c8d")
 
     # --- Réception du badge RFID ---
-    def handle_rfid(self, code_rfid):
+    def gerer_rfid(self, balise_id, code_rfid):
         # 1. Enregistrement dans le fichier JSON (Historique) de façon robuste
         dossier_courant = os.path.dirname(os.path.abspath(__file__))
         dossier_transfer = os.path.join(dossier_courant, 'transfer')
@@ -202,7 +257,7 @@ class MainWindow(QMainWindow):
         
         nouvelle_lecture = {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "node_id": "Scanner USB", 
+            "node_id": balise_id, # On utilise le vrai ID !
             "rfid_tag": code_rfid
         }
         donnees.append(nouvelle_lecture)
@@ -214,8 +269,9 @@ class MainWindow(QMainWindow):
         self.page_equipe.dernier_rfid_recu = code_rfid
         self.page_equipe.remplir_rfid()
         
-        # 3. Ajout dans le tableau historique
-        self.page_history.add_log("Scanner", "Détection RFID", f"Badge {code_rfid} scanné", "#8e44ad")
+        # 3. Ajout dans le tableau historique avec le vrai ID
+        self.page_history.add_log(f"Balise {balise_id}", "Détection RFID", f"Badge {code_rfid} scanné", "#8e44ad")
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     profile = QWebEngineProfile.defaultProfile()

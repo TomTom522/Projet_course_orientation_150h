@@ -388,7 +388,9 @@ class ScenarioPage(QWidget):
                     "id_balise": id_balise_sql,
                     "position_balise": index + 1
                 }
-                
+                print(f"[*] DEBUG Payload: {payload_ordre}")
+
+
                 rep_ordre = requests.post(url_ordre, json=payload_ordre, headers=headers, timeout=5, proxies={"http": None, "https": None})
                 if rep_ordre.status_code not in [200, 201]:
                     QMessageBox.warning(self, "Erreur Ordre Balises", f"Erreur lors de l'association de la balise.\nAPI: {rep_ordre.text}")
@@ -406,9 +408,28 @@ class ScenarioPage(QWidget):
             reponse_code = requests.post(url_code, json=payload_code, headers=headers, timeout=5, proxies={"http": None, "https": None})
             
             if reponse_code.status_code not in [200, 201]:
-                QMessageBox.warning(self, "Erreur Code Secret", f"Course et parcours crees, mais le code a echoue.\\nCode: {reponse_code.status_code}\\nDetail: {reponse_code.text}")
+                QMessageBox.warning(self, "Erreur Code Secret", f"Course et parcours crees, mais le code a echoue.\nCode: {reponse_code.status_code}\nDetail: {reponse_code.text}")
+
+            # ==========================================
+            # ETAPE 4 : Mettre à jour la course actuelle de l'équipe
+            # ==========================================
+            url_equipe = f"{config.API_URL}/api/equipes/{id_equipe_choisie}"
+            
+            # NOUVEAU : On récupère le nom de l'équipe depuis le menu déroulant
+            nom_equipe_choisie = self.cb_equipes.currentText()
+            
+            payload_equipe = {
+                "nom_equipe": nom_equipe_choisie,  # L'API exige le nom !
+                "id_course_actuelle": id_course
+            }
+            
+            reponse_equipe = requests.put(url_equipe, json=payload_equipe, headers=headers, timeout=5, proxies={"http": None, "https": None})
+            
+            if reponse_equipe.status_code not in [200, 201, 204]:
+                print(f"[ERREUR] Impossible de lier l'équipe à la course: {reponse_equipe.text}")
+                QMessageBox.warning(self, "Attention", "La course est créée, mais l'association de l'équipe a échoué.")
             else:
-                QMessageBox.information(self, "Succes", "La course, le parcours et le code secret ont ete crees avec succes !")
+                QMessageBox.information(self, "Succes", "La course, le parcours, le code et l'équipe ont ete configures avec succes !")
                 
             self.in_nom_course.clear()
             self.in_code_course.clear()
@@ -420,5 +441,5 @@ class ScenarioPage(QWidget):
             
         finally:
             QApplication.restoreOverrideCursor()
-            self.btn_save.setText("Enregistrer la Course et le Parcours dans la Base de donnees")
+            self.btn_save.setText("Enregistrer la Course et le Parcours")
             self.verifier_etat_boutons()

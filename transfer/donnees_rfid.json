@@ -143,5 +143,100 @@
         "timestamp": "2026-03-31 17:06:11",
         "node_id": "Scanner USB",
         "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 14:29:39",
+        "node_id": "Scanner USB",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-04-01 14:29:57",
+        "node_id": "Scanner USB",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-04-01 14:40:03",
+        "node_id": "3",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-04-01 14:40:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:07:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:14:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 15:15:04",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:15:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:29:00",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:30:24",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:30:31",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:36:19",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:45:56",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:47:01",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:01",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:22",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-04-01 16:57:24",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
     }
 ]
