@@ -225,7 +225,7 @@ class ScenarioPage(QWidget):
         self.btn_refresh.setEnabled(False)
         self.btn_refresh.setText("Chargement...")
         
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         
         # 1. Chargement des balises
         self.liste_dispo.clear()
@@ -319,7 +319,7 @@ class ScenarioPage(QWidget):
         # Si l'utilisateur a cliqué sur le bouton "Oui"
         if msg_box.clickedButton() == btn_oui:
             url = f"{config.API_URL}/api/courses/{id_sql}"
-            headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
             
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             try:
@@ -419,7 +419,7 @@ class ScenarioPage(QWidget):
             nom_equipe_choisie = self.cb_equipes.currentText()
             
             payload_equipe = {
-                "nom_equipe": nom_equipe_choisie,  # L'API exige le nom !
+                "nom_equipe": nom_equipe_choisie,  
                 "id_course_actuelle": id_course
             }
             

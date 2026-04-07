@@ -121,27 +121,29 @@ class EquipePage(QWidget):
     def remplir_rfid(self):
         chemin_fichier = r'C:\Users\Admin\Desktop\projet_150h\Projet_5_py6ql\supervision\transfer\donnees_rfid.json'
         
-        
         # 1. On va chercher le fichier JSON
         if os.path.exists(chemin_fichier):
             try:
                 with open(chemin_fichier, 'r', encoding='utf-8') as f:
                     donnees = json.load(f)
                 
-                # 2. S'il y a des données, on prend la toute dernière (index -1)
-                if len(donnees) > 0:
-                    derniere_lecture = donnees[-1]
+                # 2. On parcourt la liste à l'envers (du plus récent au plus ancien)
+                for derniere_lecture in reversed(donnees):
                     dernier_badge = derniere_lecture.get("rfid_tag", "")
                     
-                    if dernier_badge:
+                    # FILTRE INTELLIGENT : On ignore ce qui ressemble à du GPS ou du JSON
+                    # Un vrai badge RFID ne contient ni point (.), ni virgule (,), ni accolade ({)
+                    if dernier_badge and "." not in dernier_badge and "," not in dernier_badge and "{" not in dernier_badge:
+                        
                         self.in_rfid.setText(dernier_badge)
                         self.in_rfid.setStyleSheet("border: 2px solid #2ecc71; background-color: #e8f8f5; color: black; padding: 10px; border-radius: 6px; font-weight: bold;")
-                        return # Succès, on quitte la fonction
+                        return # Succès, on a trouvé un vrai badge, on quitte la fonction !
+                        
             except Exception as e:
                 print(f"Erreur JSON : {e}")
 
-        # Si le fichier n'existe pas ou est vide
-        QMessageBox.information(self, "Scan en cours", "Aucun badge trouvé dans le fichier JSON.\nVeuillez passer un badge devant la balise LoRa d'abord.")
+        # Si on arrive ici, c'est que le fichier est vide ou ne contient aucun vrai badge
+        QMessageBox.information(self, "Scan introuvable", "Aucun vrai badge RFID trouvé dans l'historique récent.\nVeuillez passer un badge devant la balise LoRa.")
     
     def capter_nouveau_badge(self, rfid_lu):
         self.dernier_rfid_recu = rfid_lu
@@ -149,7 +151,7 @@ class EquipePage(QWidget):
 
     def charger_equipes_api(self):
         url = f"{config.API_URL}/api/equipes"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         self.btn_refresh.setEnabled(False)
         self.btn_refresh.setText("Chargement...")
@@ -231,7 +233,7 @@ class EquipePage(QWidget):
         
         if reponse == QMessageBox.StandardButton.Yes:
             url = f"{config.API_URL}/api/equipes/{id_sql}"
-            headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             try:
                 res = requests.delete(url, headers=headers, timeout=5, proxies={"http": None, "https": None})

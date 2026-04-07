@@ -39,6 +39,10 @@ class Cartemeteo(QFrame):
         self.setFixedWidth(350)
         self.donnees_forecast = []
         self.jour_selectionne = 0
+        # Coordonnées par défaut (Rodez)
+        self.lat_actuelle = 44.35
+        self.lon_actuelle = 2.57
+        self.ville_actuelle = "Rodez"
 
         self.setObjectName("MeteoCard")
         self.setStyleSheet("""
@@ -156,6 +160,13 @@ class Cartemeteo(QFrame):
         else:
             self.lbl_course.setText(f"Déconseillé : {', '.join(problemes)}")
 
+    def mettre_a_jour_position(self, lat, lon, nom_balise="Position"):
+        """Met à jour les coordonnées pour la météo"""
+        self.lat_actuelle = lat
+        self.lon_actuelle = lon
+        self.ville_actuelle = nom_balise
+        self.lbl_city.setText(f"Météo à {nom_balise}")
+
     def mettre_a_jour(self, current_data, forecast_days):
         self._current_data = current_data
         self.donnees_forecast = forecast_days
@@ -210,7 +221,6 @@ class DashboardPage(QWidget):
         left_layout.addWidget(self.weather_card)
         left_layout.addSpacing(15)
 
-
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
@@ -242,7 +252,7 @@ class DashboardPage(QWidget):
         bottom_section.setMinimumHeight(250)
         bottom_layout = QHBoxLayout(bottom_section)
 
-        self.table_team = self.create_table(["Equipe/Balise", "Latitude", "Longitude", "Batterie", "Scenario"])
+        self.table_team = self.create_table(["Balise", "Latitude", "Longitude", "Batterie", "Scenario"])
         vbox1 = QVBoxLayout()
         
         header_tables = QHBoxLayout()
@@ -304,7 +314,9 @@ class DashboardPage(QWidget):
 
     def mise_a_jour_meteo(self):
         api_key = "a6f6fef1470f473cb0694459230605"
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q=Rodez&lang=fr&days=4"
+        # Utilise les coordonnées de la carte météo (Rodez par défaut, ou balise sélectionnée)
+        coords = f"{self.weather_card.lat_actuelle},{self.weather_card.lon_actuelle}"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q={coords}&lang=fr&days=4"
         
         try:
             res = requests.get(url, timeout=5)
@@ -329,7 +341,7 @@ class DashboardPage(QWidget):
         self.balise_cards.clear()
         
         url = f"{config.API_URL}/api/balises"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         self.btn_refresh.setText("Chargement...")
         self.btn_refresh.setEnabled(False)
 
@@ -395,7 +407,7 @@ class DashboardPage(QWidget):
     # Remise au bon niveau d'indentation (aligné avec les autres "def")
     def charger_donnees_tableaux(self):
         """Récupère les données de l'API avec des requêtes GET pour remplir les tableaux du bas."""
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         
         # 1. Remplir le tableau de GAUCHE (Dernières coordonnées via /api/balises)
         try:
@@ -482,9 +494,10 @@ class DashboardPage(QWidget):
                     self.alertes_batterie[str_id] = False
 
             if lat is not None and lon is not None:
-                # Mise à jour de la carte (On n'a plus besoin de le refaire à la fin !)
-                self.map_widget.update_position(lat, lon, balise_id) 
-                
+                nom_balise = self.balise_cards.get(str_id, {}).get("nom", f"Balise {str_id}")
+                self.weather_card.mettre_a_jour_position(lat, lon, nom_balise) 
+                self.mise_a_jour_meteo()
+
                 if self.ancrage_position is None:
                     self.ancrage_position = (lat, lon)
                     status_lines.append("Ancrage Fixe")

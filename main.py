@@ -3,15 +3,17 @@ import json
 import os
 from datetime import datetime
 import serial.tools.list_ports
-import config # <-- AJOUT IMPORTANT pour pouvoir modifier le port en direct
+import config
 
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
-                             QHBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame, QComboBox) # <-- Ajout de QComboBox ici
+                             QHBoxLayout, QPushButton, QStackedWidget, QLabel, 
+                             QFrame, QComboBox, QDialog, QLineEdit, QMessageBox)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QCursor
 from PyQt6.QtWebEngineCore import QWebEngineProfile
 
 # Importation de tes modules
+from gui_modules import login_connexions 
 from gui_modules.dashboard_page import DashboardPage
 from gui_modules.config_page import ConfigPage  
 from gui_modules.history_page import HistoryPage
@@ -91,6 +93,15 @@ class MainWindow(QMainWindow):
         self.btn_scenario = QPushButton("Scénarios")
         self.btn_dash = QPushButton("Dashboard Live")
         self.btn_history = QPushButton("Historique")
+
+        # bouton de déconnexion
+        self.btn_logout = QPushButton("Déconnexion")
+        self.btn_logout.setObjectName("NavBtn") 
+        self.btn_logout.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_logout.setStyleSheet("color: #e74c3c; font-weight: bold;") # Bouton en rouge pour le différencier des autres
+        
+        # On le connecte à notre future fonction
+        self.btn_logout.clicked.connect(self.se_deconnecter)
 
         # Liste des boutons pour appliquer le style et la logique
         self.nav_buttons = [self.btn_config, self.btn_equipe, self.btn_scenario, self.btn_dash, self.btn_history]
@@ -175,8 +186,7 @@ class MainWindow(QMainWindow):
             
             # On arrête proprement le thread actuel
             if hasattr(self, 'thread') and self.thread.isRunning():
-                self.thread.terminate()
-                self.thread.wait()
+                self.thread.stop()
             
             # On relance (la fonction recrée le thread et reconnecte les signaux)
             self.lancer_lora_communication()
@@ -206,6 +216,33 @@ class MainWindow(QMainWindow):
         self.thread.position_signal.connect(self.page_config.pre_remplir_donnees_lora)
         
         self.thread.start()
+
+    def se_deconnecter(self):
+        """Gère la déconnexion de l'utilisateur."""
+        import sys
+        from PyQt6.QtWidgets import QDialog
+        from gui_modules import login_connexions
+        
+        # 1. On efface le token de la mémoire
+        config.JWT_TOKEN = None
+        
+        # 2. On cache la fenêtre principale
+        self.hide()
+        
+        # 3. On affiche à nouveau la fenêtre de connexion
+        login_window = login_connexions()
+        resultat = login_window.exec()
+        
+        # 4. On vérifie ce que l'utilisateur fait
+        if resultat == QDialog.DialogCode.Accepted:
+            # S'il se reconnecte (succès), on réaffiche le tableau de bord
+            self.show()
+            
+            # rafraichir les tableaux pour le nouvel utilisateur connecté
+            self.page_equipe.charger_equipes_api() 
+        else:
+            # S'il clique sur la croix rouge de la fenêtre de login, on ferme tout
+            sys.exit()    
 
     # --- MÉTHODES DE GESTION DES SIGNAUX ---
     def gerer_gps(self, lat, lon, balise_id):
@@ -274,8 +311,19 @@ class MainWindow(QMainWindow):
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    profile = QWebEngineProfile.defaultProfile()
-    profile.setHttpUserAgent("CourseDorientationBTSCIEL/1.0 (wederel412@qvmao.com)")
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+
+    # lance la fêntre de connexions
+    login_window = login_connexions.LoginDialog()
+    
+    # 2. Si l'utilisateur se connecte avec succès (self.accept() a été appelé)
+    if login_window.exec() == QDialog.DialogCode.Accepted:
+        
+        # 3. Alors on lance le tableau de bord principal
+        profile = QWebEngineProfile.defaultProfile()
+        profile.setHttpUserAgent("CourseDorientationBTSCIEL/1.0 (wederel412@qvmao.com)")
+        window = MainWindow()
+        window.show()
+        sys.exit(app.exec())
+    else:
+        # Si l'utilisateur clique sur la croix rouge pour fermer le login
+        sys.exit()

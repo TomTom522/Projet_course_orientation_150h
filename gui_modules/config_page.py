@@ -163,7 +163,7 @@ class ConfigPage(QWidget):
         self.in_id = QLineEdit()
         self.in_id.setPlaceholderText("Ex: LORA-101")
         self.in_nom = QLineEdit()
-        self.in_nom.setPlaceholderText("Equipe pro")
+        self.in_nom.setPlaceholderText("Balise parking de rodez")
         
         # Validateur pour forcer l'utilisateur à taper des chiffres pour les coordonnées
         v_double = QDoubleValidator(-180.0, 180.0, 8)
@@ -246,7 +246,7 @@ class ConfigPage(QWidget):
     # ==============================================================================
     def charger_balises_api(self):
         url = f"{config.API_URL}/api/balises"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         
         # On change la souris pour montrer qu'on charge, et on désactive le bouton
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
@@ -398,7 +398,7 @@ class ConfigPage(QWidget):
         
         if reponse == QMessageBox.StandardButton.Yes:
             url = f"{config.API_URL}/api/balises/{id_sql}"
-            headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             
             # 4. On demande à l'API de supprimer la balise (DELETE)

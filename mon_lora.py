@@ -15,12 +15,25 @@ class LoraThread(QThread):
     status_signal = pyqtSignal(str, str) # Envoie un texte et une couleur
     battery_signal = pyqtSignal(str) # Envoie le niveau de batterie en texte
     position_signal = pyqtSignal(float, float, str) # Envoie lat, lon et l'ID de la balise
-    
-    # MODIFICATION ICI : On envoie maintenant deux chaînes de caractères (ID balise, Code RFID)
+    # On envoie maintenant deux chaînes de caractères (ID balise, Code RFID)
     rfid_signal = pyqtSignal(str, str) 
+
+    # ==========================================
+    # NOUVEAU : Fonction pour libérer le port proprement
+    # ==========================================
+    def stop(self):
+        self.is_running = False
+        if hasattr(self, 'ser') and self.ser.is_open:
+            try:
+                self.ser.close() # On ferme le port USB !
+            except:
+                pass
+        self.quit()
+        self.wait()
 
     # La fonction 'run' contient le code qui va tourner en boucle dans l'arrière-plan
     def run(self):
+        self.is_running = True # On active la boucle
         print(f"[*] Démarrage de la connexion sur : {config.SERIAL_PORT}")
         
         # ==========================================
@@ -32,15 +45,15 @@ class LoraThread(QThread):
             # Position de départ (Centre de Rodez)
             lat, lon = 44.350000, 2.570000 
             
-            # Boucle infinie
-            while True:
+            # Boucle tant que le thread tourne
+            while self.is_running:
                 # On fait bouger la balise aléatoirement (un petit peu à chaque fois)
                 lat = round(lat + random.uniform(-0.00001, 0.0001), 6)
                 lon = round(lon + random.uniform(-0.00001, 0.0001), 6)
                 
                 # Création d'un faux paquet de données (ID 11)
                 data = {
-                    "id": 11, 
+                    "id": 1, 
                     "lat": lat, 
                     "lon": lon, 
                     "batterie": random.randint(70, 100) # Batterie aléatoire
@@ -54,8 +67,10 @@ class LoraThread(QThread):
                 # 2. Envoi à l'API backend Node.js
                 self.envoie_api(data)
                 
-                # Pause de 3 secondes avant de simuler le prochain point
-                time.sleep(3)
+                # Pause de 15 secondes découpée pour pouvoir s'arrêter instantanément
+                for _ in range(35):
+                    if not self.is_running: break
+                    time.sleep(0.1)
 
         # ==========================================
         # MODE RÉEL (AVEC LA VRAIE ANTENNE USB)
@@ -67,7 +82,7 @@ class LoraThread(QThread):
                 # On prévient l'interface que c'est connecté !
                 self.status_signal.emit("CONNECTÉ", "#2CC985")
                 
-                while True:
+                while self.is_running:
                     # S'il y a des données qui attendent dans le port USB
                     if self.ser.in_waiting > 0:
                         try:
@@ -83,6 +98,11 @@ class LoraThread(QThread):
                             if rfid_match:
                                 node_id = rfid_match.group(1)
                                 rfid_tag_brut = rfid_match.group(2).strip().upper()
+
+                                # BOUCLIER ANTI-GPS (Filtre pour le Node 4)
+                                # Si le texte contient un point ou une virgule, c'est du GPS !
+                                if "." in rfid_tag_brut or "," in rfid_tag_brut:
+                                    continue # On ignore silencieusement et on ne déclenche pas l'arbitre
                                 
                                 # --- Décodage du double héxadécimal pour avoir le bon RFID ---
                                 try:
