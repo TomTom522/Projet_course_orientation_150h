@@ -190,7 +190,10 @@ class EquipePage(QWidget):
             QMessageBox.warning(self, "Champs manquants", "Veuillez remplir le nom et scanner un badge RFID.")
             return
 
-        headers = {"Authorization": f"ApiKey {config.API_KEY}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {config.JWT_TOKEN}", 
+            "Content-Type": "application/json"
+        }
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         
         try:

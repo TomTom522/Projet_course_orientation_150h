@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import requests # NOUVEAU : Nécessaire pour la requête de reconnexion auto
 from datetime import datetime
 import serial.tools.list_ports
 import config
@@ -94,15 +95,6 @@ class MainWindow(QMainWindow):
         self.btn_dash = QPushButton("Dashboard Live")
         self.btn_history = QPushButton("Historique")
 
-        # bouton de déconnexion
-        self.btn_logout = QPushButton("Déconnexion")
-        self.btn_logout.setObjectName("NavBtn") 
-        self.btn_logout.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_logout.setStyleSheet("color: #e74c3c; font-weight: bold;") # Bouton en rouge pour le différencier des autres
-        
-        # On le connecte à notre future fonction
-        self.btn_logout.clicked.connect(self.se_deconnecter)
-
         # Liste des boutons pour appliquer le style et la logique
         self.nav_buttons = [self.btn_config, self.btn_equipe, self.btn_scenario, self.btn_dash, self.btn_history]
 
@@ -122,6 +114,7 @@ class MainWindow(QMainWindow):
         self.combo_ports.setFixedWidth(150)
         h_layout.addWidget(self.combo_ports)
         
+
         # On remplit la liste
         self.rafraichir_ports_com()
         # On connecte le changement à notre fonction
@@ -160,6 +153,57 @@ class MainWindow(QMainWindow):
 
         # --- 4. LANCEMENT DU THREAD LORA ---
         self.lancer_lora_communication()
+
+
+        self.footer = QFrame()
+        self.footer.setFixedHeight(40) # Une barre fine
+        
+        # Style spécifique pour la barre du bas
+        self.footer.setStyleSheet("""
+            QFrame {
+                background-color: #ffffff;
+                border-top: 1px solid #cbd5e1; /* Ligne de séparation en haut */
+            }
+            QLabel {
+                color: #64748b; /* Texte gris discret */
+                font-size: 13px;
+                font-weight: bold;
+                border: none;
+            }
+            QPushButton#LogoutBtn {
+                background-color: transparent;
+                color: #e74c3c; /* Rouge */
+                font-weight: bold;
+                font-size: 13px;
+                border: none;
+                padding: 5px 15px;
+                border-radius: 4px;
+            }
+            QPushButton#LogoutBtn:hover {
+                background-color: #fee2e2; /* Fond rouge très clair au survol */
+            }
+        """)
+        
+        footer_layout = QHBoxLayout(self.footer)
+        footer_layout.setContentsMargins(20, 0, 20, 0)
+
+        # 1. Texte d'information à gauche
+        self.lbl_status = QLabel("🟢 Système Prêt - Session Active")
+        footer_layout.addWidget(self.lbl_status)
+
+        # 2. Espace vide au milieu (pour pousser le bouton à droite)
+        footer_layout.addStretch() 
+
+        # 3. Bouton Déconnexion à droite
+        self.btn_logout = QPushButton("Se déconnecter")
+        self.btn_logout.setObjectName("LogoutBtn")
+        self.btn_logout.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_logout.clicked.connect(self.se_deconnecter)
+        footer_layout.addWidget(self.btn_logout)
+
+        # 4. ajout de cette barre de statut tout en bas du layout principal
+        main_layout.addWidget(self.footer)
+
 
     def rafraichir_ports_com(self):
         """Scanne les ports USB et remplit la liste déroulante"""
@@ -214,35 +258,44 @@ class MainWindow(QMainWindow):
         
         # --- Pré-remplir le formulaire de création de balise ---
         self.thread.position_signal.connect(self.page_config.pre_remplir_donnees_lora)
-        
+
+        # --- connexionxs avec l'arbitre ---
+        self.thread.scan_result_signal.connect(self.gerer_resultat_scan)
+
         self.thread.start()
 
     def se_deconnecter(self):
-        """Gère la déconnexion de l'utilisateur."""
+        """Déconnecte l'utilisateur, nettoie les tokens et retourne au Login"""
+        
+        # 1. On prévient l'API pour invalider la session côté serveur
+        try:
+            if config.JWT_TOKEN:
+                headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
+                requests.post(f"{config.API_URL}/api/auth/logout", headers=headers, timeout=2)
+                print("Déconnexion API réussie.")
+        except Exception as e:
+            print(f"Erreur lors de la déconnexion API (ignorée) : {e}")
+
+        # 2. On efface le token en mémoire vive
+        config.JWT_TOKEN = ""
+        
+        # 3. On supprime le fichier de session (qui contient le refresh token)
+        if os.path.exists("session.json"):
+            os.remove("session.json")
+            print("Fichier session.json (Refresh Token) supprimé.")
+        
+        # 4. On arrête proprement le thread LoRa s'il tourne
+        if hasattr(self, 'thread') and self.thread.isRunning():
+            self.thread.stop()
+        
+        # 5. On ferme la fenêtre principale
+        self.close()
+        
+        # 6. On redémarre l'application à zéro
+        # Cela va relancer main.py, qui ne trouvera pas de session.json,
+        # et affichera donc automatiquement la fenêtre de Login !
         import sys
-        from PyQt6.QtWidgets import QDialog
-        from gui_modules import login_connexions
-        
-        # 1. On efface le token de la mémoire
-        config.JWT_TOKEN = None
-        
-        # 2. On cache la fenêtre principale
-        self.hide()
-        
-        # 3. On affiche à nouveau la fenêtre de connexion
-        login_window = login_connexions()
-        resultat = login_window.exec()
-        
-        # 4. On vérifie ce que l'utilisateur fait
-        if resultat == QDialog.DialogCode.Accepted:
-            # S'il se reconnecte (succès), on réaffiche le tableau de bord
-            self.show()
-            
-            # rafraichir les tableaux pour le nouvel utilisateur connecté
-            self.page_equipe.charger_equipes_api() 
-        else:
-            # S'il clique sur la croix rouge de la fenêtre de login, on ferme tout
-            sys.exit()    
+        os.execl(sys.executable, sys.executable, *sys.argv)    
 
     # --- MÉTHODES DE GESTION DES SIGNAUX ---
     def gerer_gps(self, lat, lon, balise_id):
@@ -308,22 +361,78 @@ class MainWindow(QMainWindow):
         
         # 3. Ajout dans le tableau historique avec le vrai ID
         self.page_history.add_log(f"Balise {balise_id}", "Détection RFID", f"Badge {code_rfid} scanné", "#8e44ad")
-        
+
+    def gerer_resultat_scan(self, id_balise, nom_equipe, est_valide, message):
+        """Affiche le résultat de la validation API sur l'interface (Page Historique)"""
+        if est_valide:
+            titre = "Balise Validée"
+            texte = f"{nom_equipe} a validé la balise {id_balise} !"
+            couleur = "#27ae60" # Vert
+        else:
+            titre = "Erreur de Parcours"
+            texte = f"{nom_equipe} - Balise {id_balise} : {message}"
+            couleur = "#c0392b" # Rouge
+
+        # On utilise ta page historique existante pour afficher le log visuellement !
+        self.page_history.add_log(f"Balise {id_balise}", titre, texte, couleur)
+
+# FONCTION DE RECONNEXION AUTOMATIQUE
+def tenter_reconnexion_auto():
+    """Tente de se connecter silencieusement avec le refreshToken sauvegardé"""
+    fichier_session = "session.json"
+    if os.path.exists(fichier_session):
+        try:
+            with open(fichier_session, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                refresh_token = data.get("refreshToken")
+
+            if refresh_token:
+                # On demande un nouveau token avec le refresh token
+                url = f"{config.API_URL}/api/auth/refresh"
+                reponse = requests.post(url, json={"refreshToken": refresh_token}, timeout=3)
+
+                if reponse.status_code == 200:
+                    nouveaux_donnees = reponse.json()
+                    
+                    # On met à jour le token de sécurité actuel
+                    config.JWT_TOKEN = nouveaux_donnees.get("accessToken")
+                    
+                    # Si l'API nous a donné un nouveau refresh token, on le sauvegarde
+                    if "refreshToken" in nouveaux_donnees:
+                        with open(fichier_session, "w", encoding="utf-8") as f_out:
+                            json.dump({"refreshToken": nouveaux_donnees["refreshToken"]}, f_out)
+                            
+                    print("✅ Reconnexion automatique réussie !")
+                    return True
+        except Exception as e:
+            print(f"⚠️ Échec de la reconnexion auto : {e}")
+            
+    return False # la reconnexion a échoué
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # lance la fêntre de connexions
-    login_window = login_connexions.LoginDialog()
-    
-    # 2. Si l'utilisateur se connecte avec succès (self.accept() a été appelé)
-    if login_window.exec() == QDialog.DialogCode.Accepted:
-        
-        # 3. Alors on lance le tableau de bord principal
+    # 1. On tente d'abord la reconnexion silencieuse (auto-login)
+    if tenter_reconnexion_auto():
+        # Succès ! On lance directement le tableau de bord en plein écran
         profile = QWebEngineProfile.defaultProfile()
         profile.setHttpUserAgent("CourseDorientationBTSCIEL/1.0 (wederel412@qvmao.com)")
         window = MainWindow()
-        window.show()
+        window.showMaximized()
         sys.exit(app.exec())
     else:
-        # Si l'utilisateur clique sur la croix rouge pour fermer le login
-        sys.exit()
+        # Échec (ou première connexion). On lance la fenêtre de login
+        login_window = login_connexions.LoginDialog()
+        
+        # 2. Si l'utilisateur se connecte avec succès avec ses mots de passe
+        if login_window.exec() == QDialog.DialogCode.Accepted:
+            # Alors on lance le tableau de bord principal
+            profile = QWebEngineProfile.defaultProfile()
+            profile.setHttpUserAgent("CourseDorientationBTSCIEL/1.0 (wederel412@qvmao.com)")
+            window = MainWindow()
+            window.showMaximized()
+            sys.exit(app.exec())
+        else:
+            # Si l'utilisateur clique sur la croix rouge pour fermer le login
+            sys.exit()

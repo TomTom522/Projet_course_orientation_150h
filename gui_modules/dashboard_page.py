@@ -11,6 +11,28 @@ from PyQt6.QtGui import QColor
 from PyQt6.QtGui import QCursor
 from gui_modules.map_page import MapPage
 
+def distance_balise(lat1, lon1, lat2, lon2):
+    """
+    Calcule la distance en mètres entre deux coordonnées GPS 
+    (Formule de Haversine)
+    """
+    if None in (lat1, lon1, lat2, lon2):
+        return 0.0
+        
+    R = 6371000  # Rayon de la Terre en mètres
+    
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    
+    a = math.sin(dphi / 2)**2 + \
+        math.cos(phi1) * math.cos(phi2) * \
+        math.sin(dlambda / 2)**2
+        
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    
+    return R * c # Distance en mètres
+
 class StatusCard(QFrame):
     def __init__(self, text): 
         super().__init__()
@@ -99,7 +121,7 @@ class Cartemeteo(QFrame):
         main_layout.addLayout(info_layout)
 
         # Indicateur course (texte uniquement, pas de changement de couleur)
-        self.lbl_course = QLabel("⏳ Chargement de l'analyse...")
+        self.lbl_course = QLabel("Chargement de l'analyse...")
         self.lbl_course.setWordWrap(True)
         self.lbl_course.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lbl_course.setStyleSheet("""
@@ -108,6 +130,28 @@ class Cartemeteo(QFrame):
             border-radius: 5px; padding: 4px 8px;
         """)
         main_layout.addWidget(self.lbl_course)
+
+    def distance_balise(lat1, lon1, lat2, lon2):
+        """
+        Calcule la distance en mètres entre deux coordonnées GPS 
+        (Formule de Haversine)
+        """
+        if None in (lat1, lon1, lat2, lon2):
+            return 0.0
+            
+        R = 6371000  # Rayon de la Terre en mètres
+        
+        phi1, phi2 = math.radians(lat1), math.radians(lat2)
+        dphi = math.radians(lat2 - lat1)
+        dlambda = math.radians(lon2 - lon1)
+        
+        a = math.sin(dphi / 2)**2 + \
+            math.cos(phi1) * math.cos(phi2) * \
+            math.sin(dlambda / 2)**2
+            
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        
+        return R * c # Distance en mètres
 
     def changer_jour(self, index):
         self.jour_selectionne = index
@@ -285,6 +329,11 @@ class DashboardPage(QWidget):
         self.timer_meteo.timeout.connect(self.mise_a_jour_meteo)
         self.timer_meteo.start(3600000) # Mise à jour toutes les heures (3600s * 1000ms)
 
+        self.timer_live = QTimer(self)
+        self.timer_live.timeout.connect(self.actualiser_donnees_live)
+        # 10000 millisecondes = 10 secondes.
+        self.timer_live.start(10000)
+
         self.ajouter_log(datetime.now().strftime("%H:%M:%S"), "Système", "Démarrage", "Dashboard initialisé avec succès", "#3498db")
 
     def create_table(self, headers):
@@ -330,6 +379,10 @@ class DashboardPage(QWidget):
         except Exception as e:
             print(f"Erreur météo: {e}")
 
+    def actualiser_donnees_live(self):
+        """Fonction appelée automatiquement par le chronomètre pour tout rafraîchir en arrière-plan"""
+        self.charger_balises_api()
+        self.charger_donnees_tableaux()
 
     def charger_balises_api(self):
         for card in self.current_balise_widgets:
@@ -439,8 +492,23 @@ class DashboardPage(QWidget):
                     self.table_team.setItem(row, 2, QTableWidgetItem(lon_str))
                     self.table_team.setItem(row, 3, QTableWidgetItem(bat_str))
                     self.table_team.setItem(row, 4, QTableWidgetItem(scenario_api))
+
+                if len(balises) > 0:
+                    # On trouve la balise avec l'ID le plus élevé (la plus récente)
+                    balise_recente = max(balises, key=lambda x: x.get('id', 0))
+                    lat_recent = balise_recente.get("latitude")
+                    lon_recent = balise_recente.get("longitude")
+                    nom_recent = balise_recente.get("nom_balise", "Dernière Balise")
+
+                    # Si la balise a des coordonnées valides, on les donne à la carte météo
+                    if lat_recent is not None and lon_recent is not None:
+                        self.weather_card.mettre_a_jour_position(lat_recent, lon_recent, nom_recent)
+                        # On force la météo à se rafraîchir avec ces nouvelles coordonnées
+                        self.mise_a_jour_meteo()
+
         except Exception as e:
             print(f"Erreur API (Balises) : {e}")
+
 
         # 2. Remplir le tableau de DROITE (Journal local via /api/etat-course)
         ID_COURSE_ACTUELLE = 22 
@@ -522,7 +590,7 @@ class DashboardPage(QWidget):
 
         try:
             url = f"{config.API_URL}/api/etat-course/course/{ID_COURSE_ACTUELLE}" 
-            reponse = requests.get(url, headers={"Authorization": f"ApiKey {config.API_KEY}"}, timeout=2, proxies={"http": None, "https": None})
+            reponse = requests.get(url, headers = {"Authorization": f"Bearer {config.JWT_TOKEN}", "Content-Type": "application/json"}, timeout=2, proxies={"http": None, "https": None})
             if reponse.status_code == 200:
                 donnees_course = reponse.json()
                 etat_equipe = None

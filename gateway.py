@@ -39,8 +39,8 @@ def start_gateway():
                         try:
                             # --- Ajout de l'authentification ---
                             headers = {
-                                'Authorization': f"ApiKey {config.API_KEY}",
-                                'Content-Type': 'application/json'
+                                "Authorization": f"Bearer {config.JWT_TOKEN}", 
+                                "Content-Type": "application/json"
                             }
                             # ----------------------------------------------------
                             
