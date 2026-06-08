@@ -452,6 +452,9 @@ class DashboardPage(QWidget):
             r_courses = requests.get(f"{config.API_URL}/api/courses", headers=headers, timeout=5)
             r_ordres = requests.get(f"{config.API_URL}/api/ordre-balises", headers=headers, timeout=5)
 
+            print(f"[DEBUG] courses status: {r_courses.status_code} | contenu: {r_courses.text[:200]}")
+            print(f"[DEBUG] ordres status: {r_ordres.status_code} | contenu: {r_ordres.text[:200]}")
+
             if r_balises.status_code == 200:
                 balises = r_balises.json()
 

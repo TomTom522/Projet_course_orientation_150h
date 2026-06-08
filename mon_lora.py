@@ -5,6 +5,7 @@ import time
 import random
 import config
 import re
+import os
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class LoraThread(QThread):
@@ -229,19 +230,42 @@ class LoraThread(QThread):
             
             if response.status_code == 201:
                 print(f"[ARBITRE API] Balise {id_balise_sql} (node {id_balise}) validée pour {nom_eq} !")
-                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "OK"}}\n')
-                self.scan_result_signal.emit(str(id_balise), nom_eq, True, "Validé !")
+                self._envoyer_ordre_lora(id_balise, "OK")
+                self.scan_result_signal.emit(str(id_balise), nom_eq, True, "Validé")
             else:
                 msg = response.json().get('error', 'Refusé')
                 print(f"[ARBITRE API] Erreur validation: {msg}")
-                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self._envoyer_ordre_lora(id_balise, "ERR")
                 self.scan_result_signal.emit(str(id_balise), nom_eq, False, msg)
 
         except Exception as e: 
             print(f"[ERREUR CRITIQUE ARBITRE] : {e}")
 
-    def _envoyer_ordre_lora(self, message_str):
+    def _envoyer_ordre_lora(self, id_balise, status):
+        """
+        1. Génère le fichier local envoie_donnee.json avec la trame.
+        2. Envoie l'acquittement en message UART en direct à la passerelle.
+            """
+        # --- ÉTAPE 1 : GÉNÉRATION DU FICHIER JSON ---
+        try:
+            chemin_fichier = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'envoie_donnee.json')
+            donnee = {"target": int(id_balise), "status": str(status)}
+                
+            with open(chemin_fichier, 'w', encoding='utf-8') as f:
+                json.dump(donnee, f, indent=4)
+            print(f"[FICHIER] envoie_donnee.json mis à jour : {donnee}")
+        except Exception as e:
+                print(f"[ERREUR FICHIER] Impossible de générer envoie_donnee.json : {e}")
+
+        # --- ÉTAPE 2 : TRANSMISSION DIRECTE UART VIA LE PORT SÉRIE ---
         try:
             if hasattr(self, 'ser') and self.ser.is_open:
-                self.ser.write(message_str.encode('utf-8'))
-        except: pass
+                # Trame JSON brute envoyée sur l'UART avec un retour à la ligne
+                message_uart = f'{{"target": {id_balise}, "status": "{status}"}}\n'
+                self.ser.write(message_uart.encode('utf-8'))
+                self.ser.flush()  # Force l'envoi immédiat du buffer
+                print(f"[UART -> PASSERELLE] Envoyé avec succès : {message_uart.strip()}")
+            else:
+                print("[UART ATTENTION] Impossible d'envoyer la trame, le port série n'est pas ouvert.")
+        except Exception as e:
+            print(f"[ERREUR UART] Échec de la transmission série de l'acquittement : {e}")
