@@ -8,12 +8,25 @@ import re
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class LoraThread(QThread):
-    status_signal = pyqtSignal(str, str) 
-    battery_signal = pyqtSignal(str) 
-    position_signal = pyqtSignal(float, float, str) 
-    rfid_signal = pyqtSignal(str, str) 
+    # signaux recuperé pour que (main.py) les entende et réagisse
+    status_signal = pyqtSignal(str, str) # texte + couleur
+    battery_signal = pyqtSignal(str, str) # niveau batt + couleur
+    position_signal = pyqtSignal(float, float, str) # Lat, Lon, id_balise
+    rfid_signal = pyqtSignal(str, str) # code RFID lu
+    scan_result_signal = pyqtSignal(str, str, bool, str) #scan resultat final
     
-    scan_result_signal = pyqtSignal(str, str, bool, str)
+    def charger_donnees_api(self):
+        """Charge ou rafraîchit la liste des équipes depuis l'API"""
+        url = f"{config.API_URL.rstrip('/')}/api/equipes"
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
+        try:
+            r = requests.get(url, headers=headers, timeout=5, proxies={"http": None, "https": None})
+            if r.status_code == 200:
+                self.equipes_locales = r.json()
+                print(f"[LORA] {len(self.equipes_locales)} équipes chargées.")
+        except Exception as e:
+            print(f"[LORA ERREUR] API injoignable : {e}")
+
 
     def stop(self):
         self.is_running = False
@@ -34,7 +47,7 @@ class LoraThread(QThread):
                 lon = round(lon + random.uniform(-0.00001, 0.0001), 6)
                 data = {"id": 1, "lat": lat, "lon": lon, "batterie": random.randint(70, 100)}
                 self.position_signal.emit(float(data['lat']), float(data['lon']), str(data['id']))
-                self.battery_signal.emit(f"{data['batterie']}%")
+                self.battery_signal.emit(f"{data['batterie']}%", str(data['id']))
                 self.envoie_api(data)
                 for _ in range(35):
                     if not self.is_running: break
@@ -87,7 +100,7 @@ class LoraThread(QThread):
                                 if "BAT" in clean_content or "%" in clean_content:
                                     val_bat = "".join(filter(str.isdigit, clean_content))
                                     if val_bat:
-                                        self.battery_signal.emit(f"{val_bat}%")
+                                        self.battery_signal.emit(f"{val_bat}%", str(node_id))
                                         self.envoie_api({"id": node_id, "batterie": val_bat})
                                     continue
 
@@ -117,7 +130,7 @@ class LoraThread(QThread):
                                     if 'lat' in data and 'lon' in data:
                                         self.position_signal.emit(float(data['lat']), float(data['lon']), id_emetteur)
                                     if 'batterie' in data:
-                                        self.battery_signal.emit(f"{data['batterie']}%")
+                                        self.battery_signal.emit(f"{data['batterie']}%", id_emetteur)
                                     if 'rfid' in data:
                                         tag = str(data['rfid'])
                                         self.rfid_signal.emit(id_emetteur, tag)
@@ -145,46 +158,87 @@ class LoraThread(QThread):
         base_url = config.API_URL
         
         try:
+            # 1. Récupérer tous les badges pour trouver l'ID correspondant au tag physique
             resp_badges = requests.get(f"{base_url}/api/badges", headers=headers).json()
             if not isinstance(resp_badges, list): return
             
-            badge_id = next((b['id'] for b in resp_badges if b.get('tag_rfid', '').replace(' ', '') == rfid_tag.replace(' ', '')), None)
+            tag_nettoye = rfid_tag.replace(' ', '').upper()
             
-            if not badge_id:
+            badge_trouve = next((b for b in resp_badges if b.get('tag_rfid', '').replace(' ', '').upper() == tag_nettoye), None)
+            
+            if not badge_trouve:
+                print(f"[ARBITRE] Tag {tag_nettoye} non trouvé dans la base de données badges")
                 self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
                 self.scan_result_signal.emit(str(id_balise), "Inconnu", False, "Badge non enregistré")
                 return
 
+            badge_id_technique = badge_trouve['id']
+
+            # 2. On cherche l'équipe liée à cet ID de badge
             resp_equipes = requests.get(f"{base_url}/api/equipes", headers=headers).json()
-            equipe = next((e for e in resp_equipes if e.get('id_badge') == badge_id), None)
+
+            print(f"[DEBUG ARBITRE] Badge cherché (technique): {badge_id_technique} (type: {type(badge_id_technique)})")
+            for e in resp_equipes:
+                print(f"[DEBUG ARBITRE] Equipe: {e.get('nom_equipe')} | id_badge={e.get('id_badge')} (type: {type(e.get('id_badge'))})")
+
+            equipe = next((e for e in resp_equipes if str(e.get('id_badge')) == str(badge_id_technique)), None)
             
-            if not equipe or not equipe.get('id_course_actuelle'):
+            # 3. Vérification de l'attribution
+            if not equipe:
+                print(f"[ARBITRE] Aucune équipe n'est liée au badge technique n°{badge_id_technique} ({tag_nettoye})")
                 self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
-                self.scan_result_signal.emit(str(id_balise), "Inconnu", False, "Équipe sans course")
+                self.scan_result_signal.emit(str(id_balise), "Inconnu", False, "Badge non attribué")
                 return
 
-            id_equipe = equipe['id']
-            id_course = equipe['id_course_actuelle']
-            nom_eq = equipe.get('nom_equipe', f"Équipe {id_equipe}")
+            nom_eq = equipe.get('nom_equipe', "Équipe sans nom")
+            id_course = equipe.get('id_course_actuelle')
 
-            payload = {"id_course": id_course, "id_equipe": id_equipe}
-            url_validation = f"{base_url}/api/validation/{id_balise}"
+            # 4. Vérification de la course active
+            if not id_course:
+                print(f"[ARBITRE] {nom_eq} est bien reconnue mais n'a pas de course active.")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, "Équipe sans course")
+                return
+
+            # 5. Résoudre le node_id LoRa → id_sql de la balise
+            resp_balises = requests.get(f"{base_url}/api/balises", headers=headers).json()
+            
+            # DEBUG TEMPORAIRE - à supprimer une fois résolu
+            print(f"[DEBUG BALISES] Node reçu : '{id_balise}' (type: {type(id_balise)})")
+            for b in resp_balises:
+                print(f"[DEBUG BALISES] BDD → lora_id='{b.get('lora_id')}' (type: {type(b.get('lora_id'))}) | id_sql={b.get('id')}")
+            
+            balise_sql = next(
+                (b for b in resp_balises if str(b.get('lora_id')) == str(id_balise)),
+                None
+            )
+            
+            if not balise_sql:
+                print(f"[ARBITRE] Node LoRa '{id_balise}' non trouvé dans les balises configurées")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, "Balise non configurée dans le système")
+                return
+            
+            id_balise_sql = balise_sql.get('id') or balise_sql.get('id_balise')
+            print(f"[ARBITRE] Node LoRa {id_balise} → ID SQL balise : {id_balise_sql}")
+
+            # 6. Envoi de la validation à l'API avec l'ID SQL de la balise
+            payload = {"id_course": id_course, "id_equipe": equipe['id']}
+            url_validation = f"{base_url}/api/validation/{id_balise_sql}"
             response = requests.post(url_validation, json=payload, headers=headers, timeout=3)
             
             if response.status_code == 201:
-                print(f"[ARBITRE API] ✅ Balise {id_balise} validée pour l'équipe {nom_eq} !")
+                print(f"[ARBITRE API] Balise {id_balise_sql} (node {id_balise}) validée pour {nom_eq} !")
                 self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "OK"}}\n')
-                self.scan_result_signal.emit(str(id_balise), nom_eq, True, "Balise validée !")
-                
-            elif response.status_code == 409:
-                data = response.json()
-                erreur_msg = data.get('error', 'Ordre incorrect')
-                print(f"[ARBITRE API] ❌ Balise {id_balise} refusée ! ({erreur_msg})")
+                self.scan_result_signal.emit(str(id_balise), nom_eq, True, "Validé !")
+            else:
+                msg = response.json().get('error', 'Refusé')
+                print(f"[ARBITRE API] Erreur validation: {msg}")
                 self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
-                self.scan_result_signal.emit(str(id_balise), nom_eq, False, erreur_msg)
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, msg)
 
         except Exception as e: 
-            print(f"[ERREUR] : {e}")
+            print(f"[ERREUR CRITIQUE ARBITRE] : {e}")
 
     def _envoyer_ordre_lora(self, message_str):
         try:

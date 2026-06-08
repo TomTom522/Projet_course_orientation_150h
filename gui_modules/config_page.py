@@ -198,9 +198,9 @@ class ConfigPage(QWidget):
         return frame
 
 
-    # ==============================================================================
+    
     # FONCTION : Créer la carte cliquable
-    # ==============================================================================
+
     def creer_mini_map(self):
         frame = QFrame()
         frame.setObjectName("Card")
@@ -384,10 +384,15 @@ class ConfigPage(QWidget):
 
     def pre_remplir_donnees_lora(self, lat, lon, id_balise):
         """Remplit automatiquement le formulaire quand une donnée LoRa arrive"""
+
+        # Si on es en train d'écrire dans la case "Nom", rien ne change
+        if self.in_nom.hasFocus():
+            return
+        
         # On remplit l'ID
         self.in_id.setText(str(id_balise))
         
-        # On remplit les coordonnées (en remplaçant le point par une virgule pour ton interface)
+        # On remplit les coordonnées (en remplaçant le point par une virgule pour l'interface)
         self.in_lat.setText(str(lat).replace('.', ','))
         self.in_lon.setText(str(lon).replace('.', ','))
         

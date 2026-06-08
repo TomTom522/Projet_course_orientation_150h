@@ -117,10 +117,10 @@ class LoginDialog(QDialog):
             if rep.status_code == 200:
                 data = rep.json()
                 
-                # Le serveur nous donne le JWT, on le stocke !
+                # Le serveur nous donne le JWT, on le stocke
                 config.JWT_TOKEN = data.get("accessToken") 
                 
-                # 🟢 NOUVEAU : On sauvegarde le refreshToken pour l'auto-login
+                # On sauvegarde le refreshToken pour l'auto-login
                 refresh_token = data.get("refreshToken")
                 if refresh_token:
                     try:

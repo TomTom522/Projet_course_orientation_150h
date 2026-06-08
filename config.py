@@ -3,9 +3,7 @@ SERIAL_PORT = "COM3"
 BAUD_RATE = 115200
 
 # URL de l'API Docker
-API_URL = "http://172.40.1.151:3000"
-
+API_URL = "https://co-backend.btscarnus.fr" # https://co-backend.btscarnus.fr -- http://172.40.10.150:3000/ -- https://api-courseorientation.enzodufour.fr/
 API_KEY = "x5BVq1jAe3QECeReHwECL891tCT" 
-# acces que pour la connexions de l'admin au logiciels TODO faire la page de connexion 
 
 JWT_TOKEN = None

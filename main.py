@@ -1,7 +1,7 @@
 import sys
 import json
 import os
-import requests # NOUVEAU : Nécessaire pour la requête de reconnexion auto
+import requests 
 from datetime import datetime
 import serial.tools.list_ports
 import config
@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
         footer_layout.setContentsMargins(20, 0, 20, 0)
 
         # 1. Texte d'information à gauche
-        self.lbl_status = QLabel("🟢 Système Prêt - Session Active")
+        self.lbl_status = QLabel("Système Prêt - Session Active")
         footer_layout.addWidget(self.lbl_status)
 
         # 2. Espace vide au milieu (pour pousser le bouton à droite)
@@ -207,7 +207,7 @@ class MainWindow(QMainWindow):
 
     def rafraichir_ports_com(self):
         """Scanne les ports USB et remplit la liste déroulante"""
-        # On désactive la détection le temps de remplir pour ne pas déclencher 50 fois l'événement
+        # On désactive la détection, le temps de remplir pour ne pas déclencher plusieurs fois l'événement
         self.combo_ports.blockSignals(True)
         self.combo_ports.clear()
         
@@ -302,19 +302,21 @@ class MainWindow(QMainWindow):
         # 1. Mise à jour du Dashboard
         self.page_dashboard.update_dashboard_data(lat, lon, None, balise_id)
         # 2. Ajout dans l'historique (Couleur bleue)
-        self.page_history.add_log(balise_id, "Position GPS", f"Lat: {lat:.5f}, Lon: {lon:.5f}", "#2980b9")
+        self.page_history.add_log(f"Balise {balise_id}", "Position GPS", f"Lat: {lat:.5f}, Lon: {lon:.5f}", "#2980b9")
 
-    def gerer_batterie(self, val_str):
+    def gerer_batterie(self, val_str, balise_id): # <-- 1. On ajoute balise_id ici !
         try:
             val_int = int(val_str.replace("%", "").strip())
-            # 1. Mise à jour du Dashboard
-            self.page_dashboard.update_dashboard_data(None, None, val_int, "Balise")
             
-            # 2. Ajout dans l'historique (Couleur orange/rouge si faible, vert si ok)
+            # 1. Mise à jour du Dashboard avec le VRAI identifiant
+            self.page_dashboard.update_dashboard_data(None, None, val_int, balise_id)
+            
+            # 2. Ajout dans l'historique avec le VRAI nom
             color = "#e67e22" if val_int < 30 else "#27ae60"
-            self.page_history.add_log("Balise", "Niveau Batterie", f"{val_int}% restants", color)
-        except:
-            pass
+            self.page_history.add_log(f"Balise {balise_id}", "Batterie", f"{val_int}% restants", color)
+            
+        except Exception as e:
+            print(f"Erreur batterie : {e}")
             
     def gerer_status(self, text, color):
         if hasattr(self.page_dashboard, 'card_deco'):
@@ -325,6 +327,14 @@ class MainWindow(QMainWindow):
             # Ajout dans l'historique (Couleur noire/grise)
             self.page_history.add_log("Système", "Statut USB LoRa", text, "#7f8c8d")
 
+    # Dans main.py, à l'intérieur de la classe MainWindow
+    def rafraichir_donnees_lora(self):
+        """Demande au thread LoRa de recharger les équipes depuis l'API"""
+        if hasattr(self, 'lora_thread') and self.lora_thread.isRunning():
+            # On appelle la méthode du thread pour qu'il mette à jour self.equipes_locales
+            self.lora_thread.charger_donnees_api()
+            print("Thread LoRa : Données synchronisées avec l'API.")
+            
     # --- Réception du badge RFID ---
     def gerer_rfid(self, balise_id, code_rfid):
         # 1. Enregistrement dans le fichier JSON (Historique) de façon robuste
@@ -378,6 +388,8 @@ class MainWindow(QMainWindow):
 
 # FONCTION DE RECONNEXION AUTOMATIQUE
 def tenter_reconnexion_auto():
+    return True # a modif quand il faut faire avec le login, permet de se connecter sans un login
+
     """Tente de se connecter silencieusement avec le refreshToken sauvegardé"""
     fichier_session = "session.json"
     if os.path.exists(fichier_session):
@@ -415,7 +427,7 @@ if __name__ == "__main__":
 
     # 1. On tente d'abord la reconnexion silencieuse (auto-login)
     if tenter_reconnexion_auto():
-        # Succès ! On lance directement le tableau de bord en plein écran
+        # Succès, On lance directement le tableau de bord en plein écran
         profile = QWebEngineProfile.defaultProfile()
         profile.setHttpUserAgent("CourseDorientationBTSCIEL/1.0 (wederel412@qvmao.com)")
         window = MainWindow()

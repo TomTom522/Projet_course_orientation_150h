@@ -1,0 +1,3032 @@
+[
+    {
+        "timestamp": "2026-04-15 14:17:51",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:17:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:17:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:17:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:17:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:17:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:19:16",
+        "node_id": "5",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:19:29",
+        "node_id": "5",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:19:30",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 14:22:46",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 15:08:35",
+        "node_id": "5",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 15:37:04",
+        "node_id": "5",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-15 15:37:10",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-04-16 11:34:07",
+        "node_id": "5",
+        "rfid_tag": "08 96 FE F6"
+    },
+    {
+        "timestamp": "2026-04-16 11:58:50",
+        "node_id": "5",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-04-16 12:04:16",
+        "node_id": "5",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:23:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:23:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:23:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:24:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:24:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:24:50",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:25:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:25:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:25:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:26:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:26:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:26:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:27:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:27:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:28:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:28:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:28:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:29:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:29:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:29:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:30:07",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:30:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:30:49",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:31:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:31:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:31:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:32:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:32:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:32:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:33:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:33:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:33:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:34:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:34:41",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:35:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:35:23",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:35:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:36:05",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:36:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:36:47",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:37:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:37:29",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:37:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:38:11",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:38:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:38:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:39:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:39:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:39:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:40:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:40:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:41:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:41:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:41:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:42:03",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:42:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:42:45",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:43:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:43:29",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:43:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:44:11",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:44:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:44:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:45:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:45:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:45:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:46:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:46:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:47:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:47:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:47:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:48:03",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:48:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:48:45",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:49:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:49:27",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:49:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:50:09",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:50:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:50:51",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:51:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:51:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:51:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:52:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:52:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:52:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:53:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:53:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:54:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:54:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:54:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:55:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:55:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:55:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:56:07",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:56:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:56:49",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:57:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:57:31",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:57:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:58:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:58:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:58:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:59:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 14:59:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:00:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:00:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:00:42",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:01:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:01:24",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:01:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:02:07",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:02:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:02:49",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:03:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:03:31",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:03:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:04:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:04:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:04:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:05:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:05:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:05:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:06:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:06:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:07:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:07:22",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:07:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:08:04",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:08:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:08:46",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:09:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:09:29",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:09:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:10:11",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:10:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:10:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:11:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:11:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:11:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:12:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:12:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:12:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:13:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:13:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:14:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:14:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:14:44",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:15:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:15:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:15:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:16:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:16:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:16:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:17:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:17:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:17:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:18:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:18:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:18:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:19:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:19:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:20:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:20:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:20:44",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:21:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:21:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:21:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:22:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:22:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:22:50",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:23:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:23:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:23:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:24:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:24:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:24:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:25:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:25:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:26:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:26:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:26:42",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:27:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:27:24",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:27:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:28:06",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:28:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:28:48",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:29:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:29:30",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:29:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:30:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:30:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:30:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:31:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:31:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:31:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:32:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:32:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:33:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:33:24",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:33:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:34:06",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:34:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:34:48",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:35:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:35:30",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:35:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:36:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:36:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:36:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:37:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:37:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:37:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:38:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:38:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:39:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:39:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:39:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:40:04",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:40:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:40:46",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:41:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:41:28",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:41:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:42:10",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:42:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:42:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:43:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:43:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:43:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:44:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:44:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:44:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:45:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:45:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:46:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:46:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:46:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:47:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:47:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:47:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:48:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:48:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:48:50",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:49:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:49:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:49:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:50:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:50:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:50:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:51:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:51:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:52:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:52:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:52:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:53:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:53:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:53:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:54:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:54:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:54:50",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:55:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:55:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:55:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:56:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:56:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:56:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:57:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:57:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:57:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:58:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:58:41",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:59:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:59:23",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 15:59:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:00:05",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:00:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:00:47",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:01:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:01:29",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:01:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:02:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:02:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:02:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:03:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:03:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:03:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:04:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:04:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:05:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:05:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:05:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:06:05",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:06:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:06:47",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:07:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:07:29",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:07:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:08:11",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:08:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:08:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:09:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:09:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:09:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:10:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:10:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:11:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:11:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:11:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:12:03",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:12:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:12:45",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:13:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:13:27",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:13:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:14:09",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:14:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:14:51",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:15:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:15:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:15:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:16:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:16:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:16:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:17:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:17:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:18:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:18:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:18:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:19:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:19:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:19:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:20:07",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:20:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:20:49",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:21:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:21:31",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:21:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:22:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:22:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:22:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:23:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:23:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:24:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:24:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:24:42",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:25:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:25:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:25:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:26:07",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:26:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:26:49",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:27:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:27:31",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:27:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:28:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:28:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:28:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:29:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:29:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:29:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:30:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:30:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:31:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:31:22",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:31:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:32:04",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:32:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:32:46",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:33:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:33:28",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:33:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:34:11",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:34:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:34:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:35:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:35:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:35:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:36:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:36:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:36:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:37:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:37:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:38:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:38:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:38:44",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:39:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:39:28",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:39:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:40:10",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:40:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:40:52",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:41:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:41:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:41:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:42:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:42:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:42:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:43:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:43:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:44:02",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:44:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:44:44",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:45:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:45:26",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:45:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:46:08",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:46:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:46:50",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:47:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:47:32",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:47:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:48:14",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:48:35",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:48:56",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:49:17",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:49:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:49:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:50:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:50:42",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:51:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:51:24",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:51:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:52:06",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:52:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:52:48",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:53:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:53:30",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:53:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:54:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:54:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:54:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:55:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:55:38",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:55:59",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:56:20",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:56:41",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:57:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:57:23",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:57:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:58:05",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:58:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:58:48",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:59:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:59:30",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 16:59:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:00:12",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:00:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:00:54",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:01:15",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:01:36",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:01:57",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:02:18",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:02:39",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:03:00",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:03:21",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:03:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:04:03",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:04:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:04:45",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:05:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:05:27",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:05:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:06:09",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:06:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:06:51",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:07:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:07:34",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:07:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:08:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:08:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:08:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:09:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:09:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:10:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:10:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:10:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:11:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:11:25",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:11:53",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:12:09",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:12:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:12:51",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:13:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:13:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:13:55",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:14:16",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:14:37",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:14:58",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:15:19",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:15:40",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:16:01",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:16:33",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:16:43",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-05 17:17:13",
+        "node_id": "3",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-06 14:29:26",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-06 14:29:59",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-06 16:40:45",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-06 16:43:09",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-06 16:46:59",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-06 16:47:53",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-06 16:49:08",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-06 16:54:10",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-06 16:54:19",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:11:30",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:13:00",
+        "node_id": "3",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:13:17",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:24:06",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:24:32",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:27:01",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:28:27",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:29:23",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:37:14",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:41:00",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:43:12",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:57:39",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:57:45",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-07 11:57:50",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-07 11:59:14",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:59:27",
+        "node_id": "4",
+        "rfid_tag": "84 8F 9D 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:59:48",
+        "node_id": "4",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-05-07 11:59:52",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:00:58",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:01:39",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:01:40",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:20:08",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:20:18",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:20:25",
+        "node_id": "4",
+        "rfid_tag": "84 E6 0B 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:20:56",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:21:05",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-07 12:22:16",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-07 12:22:21",
+        "node_id": "4",
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:23:37",
+        "node_id": "4",
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:28:16",
+        "node_id": "4",
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:44:34",
+        "node_id": "4",
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-05-07 12:45:03",
+        "node_id": "4",
+        "rfid_tag": "94 92 D7 1E"
+    },
+    {
+        "timestamp": "2026-05-11 13:42:37",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:43:16",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:50:53",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:52:13",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:52:24",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:59:08",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:59:15",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 13:59:19",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:07:33",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:08:49",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:12:58",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:15:15",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:18:11",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:18:54",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:20:48",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:21:27",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:34:34",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:35:31",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:41:37",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:42:47",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:42:59",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:43:17",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:43:22",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:43:23",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:43:24",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:46:14",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:46:51",
+        "node_id": "4",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:47:03",
+        "node_id": "5",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 14:47:07",
+        "node_id": "3",
+        "rfid_tag": "43 92 F1 98"
+    },
+    {
+        "timestamp": "2026-05-11 15:04:22",
+        "node_id": "5",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:10:41",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:11:14",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:11:46",
+        "node_id": "5",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:11:47",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:11:49",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:17:26",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:17:58",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:20:10",
+        "node_id": "5",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:20:13",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:23:07",
+        "node_id": "4",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-05-11 15:26:48",
+        "node_id": "4",
+        "rfid_tag": "B4 2D 5E 1E"
+    },
+    {
+        "timestamp": "2026-05-11 16:11:13",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 16:25:41",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 16:26:28",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-11 16:26:41",
+        "node_id": "3",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-26 11:04:39",
+        "node_id": "5",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-26 16:41:43",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-05-27 14:14:11",
+        "node_id": "4",
+        "rfid_tag": "A4 EA 7A 1E"
+    },
+    {
+        "timestamp": "2026-05-27 14:15:11",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-27 14:19:23",
+        "node_id": "2",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-27 14:19:56",
+        "node_id": "4",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-27 14:20:10",
+        "node_id": "5",
+        "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-05-27 14:21:28",
+        "node_id": "2",
+        "rfid_tag": "94 E5 42 1E"
+    }
+]

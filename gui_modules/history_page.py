@@ -41,7 +41,7 @@ class HistoryPage(QWidget):
         header_layout.addWidget(lbl_title)
         
         # ==========================================
-        # NOUVEAU : Menu déroulant pour filtrer l'historique
+        # Menu déroulant pour filtrer l'historique
         # ==========================================
         self.combo_filtre = QComboBox()
         self.combo_filtre.addItems(["Tous les événements", "Position GPS", "Scan RFID", "Batterie", "Autre"])
@@ -77,7 +77,7 @@ class HistoryPage(QWidget):
         return table
 
     # ==========================================
-    # NOUVEAU : Fonction de filtrage du tableau
+    # Fonction de filtrage du tableau
     # ==========================================
     def filtrer_historique(self, choix):
         """Affiche ou masque les lignes selon le filtre sélectionné"""
@@ -88,7 +88,7 @@ class HistoryPage(QWidget):
                 
                 if choix == "Tous les événements" or choix == texte_type:
                     self.table_systeme.setRowHidden(row, False)
-                elif choix == "⚠️ Autre" and "📍" not in texte_type and "🏷️" not in texte_type and "🔋" not in texte_type:
+                elif choix == "Autre" and "📍" not in texte_type and "🏷️" not in texte_type and "🔋" not in texte_type:
                     self.table_systeme.setRowHidden(row, False)
                 else:
                     self.table_systeme.setRowHidden(row, True)
@@ -96,9 +96,9 @@ class HistoryPage(QWidget):
     def add_log(self, source, event_type, details, color="#1e293b"):
         """Ajoute un log directement dans le tableau avec Auto-Détection"""
         
-        # ==========================================
-        # NOUVEAU : AUTO-DÉTECTION (RFID vs GPS)
-        # ==========================================
+        # ================
+        # AUTO-DÉTECTION 
+        # ================
         details_min = str(details).lower()
         event_min = str(event_type).lower()
         
@@ -114,7 +114,6 @@ class HistoryPage(QWidget):
         else:
             event_type = f"{event_type}" # On ajoute une icône par défaut
             color = "#8e44ad" # Violet pour les infos diverses
-        # ==========================================
 
         heure = datetime.now().strftime("%H:%M:%S")
             
@@ -303,18 +302,27 @@ class HistoryPage(QWidget):
         for index, stat in enumerate(stats_course):
             stat['position'] = index + 1
 
-        # --- 5. CRÉATION DU HTML ---
+        # --- Extraction des données du tableau ---
         lignes_html = ""
-        for stat in stats_course:
-            lignes_html += f"""
-            <tr>
-                <td style='text-align:center;'>{stat['position']}</td>
-                <td><b>{stat['equipe']}</b></td>
-                <td style='text-align:center;'>{stat['temps']}</td>
-                <td style='text-align:center;'>{stat['balises_format']}</td>
-                <td style='text-align:center; color: red;'>{stat['penalites']}</td>
-            </tr>
-            """
+        nombre_de_lignes = self.table_systeme.rowCount()
+
+        for row in range(nombre_de_lignes):
+            heure = self.table_systeme.item(row, 0).text() if self.table_systeme.item(row, 0) else ""
+            equipe = self.table_systeme.item(row, 1).text() if self.table_systeme.item(row, 1) else ""
+            evenement = self.table_systeme.item(row, 2).text() if self.table_systeme.item(row, 2) else ""
+            details = self.table_systeme.item(row, 3).text() if self.table_systeme.item(row, 3) else ""
+
+            # On ne met dans le rapport que les lignes importantes (Validations)
+            # Tu peux ajuster le mot clé selon ce qui s'affiche dans ton tableau
+            if "Validée" in evenement or "RFID" in evenement:
+                lignes_html += f"""
+                <tr>
+                    <td style='text-align:center;'>{heure}</td>
+                    <td>{equipe}</td>
+                    <td style='text-align:center;'>{evenement}</td>
+                    <td>{details}</td>
+                </tr>
+                """
 
         html_content = f"""
         <html>

@@ -168,7 +168,8 @@ class EquipePage(QWidget):
                     id_sql = eq.get("id") or eq.get("id_equipe")
                     id_eq_str = str(id_sql)
                     nom = str(eq.get("nom_equipe", "Sans nom"))
-                    badge = str(eq.get("id_badge", "N/A"))
+                    badge_val = eq.get("id_badge")
+                    badge = str(badge_val) if badge_val is not None else "Aucun badge"
                     
                     item_id = QTableWidgetItem(id_eq_str)
                     item_id.setData(Qt.ItemDataRole.UserRole, id_sql) # Stockage invisible de l'ID pour la suppression
@@ -197,27 +198,114 @@ class EquipePage(QWidget):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         
         try:
-            url_badge = f"{config.API_URL}/api/badges"
-            reponse_badge = requests.post(url_badge, json={"tag_rfid": rfid}, headers=headers, timeout=5, proxies={"http": None, "https": None})
+            # ========================================
+            # ÉTAPE 1 : Vérifier si le badge existe déjà
+            # ========================================
+            url_get_badges = f"{config.API_URL}/api/badges"
+            reponse_get_badges = requests.get(url_get_badges, headers=headers, timeout=5, proxies={"http": None, "https": None})
             
-            if reponse_badge.status_code == 409:
-                QMessageBox.warning(self, "Erreur", "Ce badge RFID est déjà assigné à une autre équipe !")
-                return
-            elif reponse_badge.status_code not in [200, 201]:
-                return
+            if reponse_get_badges.status_code == 200:
+                badges_existants = reponse_get_badges.json()
                 
-            id_badge_serveur = reponse_badge.json().get("id") or reponse_badge.json().get("id_badge")
+                # On nettoie le RFID saisi pour comparaison (suppression des espaces)
+                rfid_nettoye = rfid.replace(' ', '').upper()
+                
+                # On cherche si ce badge existe déjà
+                badge_trouve = None
+                for b in badges_existants:
+                    tag_existant = b.get('tag_rfid', '').replace(' ', '').upper()
+                    if tag_existant == rfid_nettoye:
+                        badge_trouve = b
+                        break
+                
+                # Si le badge existe déjà
+                if badge_trouve:
+                    id_badge_existant = badge_trouve.get('id') or badge_trouve.get('id_badge')
+                    
+                    # ========================================
+                    # ÉTAPE 2 : Vérifier si ce badge est déjà lié à une équipe
+                    # ========================================
+                    url_get_equipes = f"{config.API_URL}/api/equipes"
+                    reponse_equipes = requests.get(url_get_equipes, headers=headers, timeout=5, proxies={"http": None, "https": None})
+                    
+                    if reponse_equipes.status_code == 200:
+                        equipes = reponse_equipes.json()
+                        
+                        # On cherche si ce badge est déjà utilisé par une équipe
+                        equipe_utilisant_badge = None
+                        for eq in equipes:
+                            if eq.get('id_badge') == id_badge_existant:
+                                equipe_utilisant_badge = eq
+                                break
+                        
+                        # Si le badge est déjà attribué à une équipe
+                        if equipe_utilisant_badge:
+                            nom_equipe_existante = equipe_utilisant_badge.get('nom_equipe', 'Équipe inconnue')
+                            QMessageBox.warning(
+                                self, 
+                                "Badge déjà attribué", 
+                                f"Ce badge RFID est déjà assigné à l'équipe :\n\n« {nom_equipe_existante} »"
+                            )
+                            QApplication.restoreOverrideCursor()
+                            return
+                    
+                    # ✅ Le badge existe mais n'est pas utilisé, on peut l'utiliser
+                    id_badge_serveur = int(id_badge_existant)
+                    
+                else:
+                    # ========================================
+                    # ÉTAPE 3 : Le badge n'existe pas, on le crée
+                    # ========================================
+                    url_badge = f"{config.API_URL}/api/badges"
+                    reponse_badge = requests.post(
+                        url_badge, 
+                        json={"tag_rfid": rfid}, 
+                        headers=headers, 
+                        timeout=5, 
+                        proxies={"http": None, "https": None}
+                    )
+                    
+                    if reponse_badge.status_code not in [200, 201]:
+                        QMessageBox.critical(
+                            self, 
+                            "Erreur API", 
+                            f"Impossible de créer le badge.\nCode : {reponse_badge.status_code}"
+                        )
+                        QApplication.restoreOverrideCursor()
+                        return
+                        
+                    id_badge_serveur = reponse_badge.json().get("id") or reponse_badge.json().get("id_badge")
 
-            url_equipe = f"{config.API_URL}/api/equipes"
-            reponse_equipe = requests.post(url_equipe, json={"nom_equipe": nom_eq, "id_badge": id_badge_serveur}, headers=headers, timeout=5, proxies={"http": None, "https": None})
+                # ========================================
+                # ÉTAPE 4 : Créer l'équipe avec le badge
+                # ========================================
+                url_equipe = f"{config.API_URL}/api/equipes"
+                reponse_equipe = requests.post(
+                    url_equipe, 
+                    json={"nom_equipe": nom_eq, "id_badge": int(id_badge_serveur)},
+                    headers=headers, 
+                    timeout=5, 
+                    proxies={"http": None, "https": None}
+                )
+                print(f"[DEBUG] Création équipe avec payload: nom={nom_eq}, id_badge={id_badge_serveur}")
+                print(f"[DEBUG] Réponse API: {reponse_equipe.status_code} - {reponse_equipe.json()}")
+                
+                if reponse_equipe.status_code in [200, 201]: 
+                    QMessageBox.information(self, "Succès", f"L'équipe « {nom_eq} » a été créée avec succès !")
+                    self.in_nom_equipe.clear()
+                    self.in_rfid.clear()
+                    self.dernier_rfid_recu = "" 
+                    self.charger_equipes_api()
+                else:
+                    QMessageBox.critical(
+                        self, 
+                        "Erreur", 
+                        f"Impossible de créer l'équipe.\nCode : {reponse_equipe.status_code}"
+                    )
+                    
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur Réseau", f"Impossible de contacter l'API : {e}")
             
-            if reponse_equipe.status_code in [200, 201]: 
-                self.in_nom_equipe.clear()
-                self.in_rfid.clear()
-                self.dernier_rfid_recu = "" 
-                self.charger_equipes_api()
-        except:
-            pass
         finally:
             QApplication.restoreOverrideCursor()
 
