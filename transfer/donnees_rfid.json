@@ -3028,5 +3028,20 @@
         "timestamp": "2026-05-27 14:21:28",
         "node_id": "2",
         "rfid_tag": "94 E5 42 1E"
+    },
+    {
+        "timestamp": "2026-06-08 15:46:05",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-06-08 15:47:09",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
+    },
+    {
+        "timestamp": "2026-06-08 15:48:27",
+        "node_id": "4",
+        "rfid_tag": "FA 77 98 2E"
     }
 ]

@@ -388,7 +388,7 @@ class MainWindow(QMainWindow):
 
 # FONCTION DE RECONNEXION AUTOMATIQUE
 def tenter_reconnexion_auto():
-    return True # a modif quand il faut faire avec le login, permet de se connecter sans un login
+    #return True # a modif quand il faut faire avec le login, permet de se connecter sans un login
 
     """Tente de se connecter silencieusement avec le refreshToken sauvegardé"""
     fichier_session = "session.json"
