@@ -163,7 +163,7 @@ class ConfigPage(QWidget):
         self.in_id = QLineEdit()
         self.in_id.setPlaceholderText("Ex: LORA-101")
         self.in_nom = QLineEdit()
-        self.in_nom.setPlaceholderText("Equipe pro")
+        self.in_nom.setPlaceholderText("Balise parking de rodez")
         
         # Validateur pour forcer l'utilisateur à taper des chiffres pour les coordonnées
         v_double = QDoubleValidator(-180.0, 180.0, 8)
@@ -198,9 +198,9 @@ class ConfigPage(QWidget):
         return frame
 
 
-    # ==============================================================================
+    
     # FONCTION : Créer la carte cliquable
-    # ==============================================================================
+
     def creer_mini_map(self):
         frame = QFrame()
         frame.setObjectName("Card")
@@ -246,7 +246,7 @@ class ConfigPage(QWidget):
     # ==============================================================================
     def charger_balises_api(self):
         url = f"{config.API_URL}/api/balises"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         
         # On change la souris pour montrer qu'on charge, et on désactive le bouton
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
@@ -277,7 +277,7 @@ class ConfigPage(QWidget):
                     lat = str(b.get("latitude", "0.0"))
                     lon = str(b.get("longitude", "0.0"))
                     
-                    # ASTUCE : On crée un objet de tableau pour l'ID LoRa, et on lui cache l'ID SQL à l'intérieur !
+                    # On crée un objet de tableau pour l'ID LoRa, et on lui cache l'ID SQL à l'intérieur
                     # Cela nous permettra de savoir quel ID supprimer plus tard.
                     item_lora = QTableWidgetItem(id_lora)
                     item_lora.setData(Qt.ItemDataRole.UserRole, id_sql) 
@@ -299,9 +299,9 @@ class ConfigPage(QWidget):
             self.btn_refresh.setText("Actualiser la liste")
 
 
-    # ==============================================================================
+    
     # FONCTION : Ajouter une balise via le formulaire
-    # ==============================================================================
+    
     def ajouter_balise_table(self):
         # 1. On récupère le texte tapé par l'utilisateur (strip() enlève les espaces en trop)
         id_lora = self.in_id.text().strip()
@@ -324,7 +324,10 @@ class ConfigPage(QWidget):
 
         # 4. On prépare les données à envoyer à l'API
         url = f"{config.API_URL}/api/balises"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {config.JWT_TOKEN}", 
+            "Content-Type": "application/json"
+        }
         
         # Si aucun nom n'est saisi, on crée un nom par défaut "Balise LORA-101"
         nom_final = nom_saisi if nom_saisi != "" else f"Balise {id_lora}"
@@ -354,6 +357,21 @@ class ConfigPage(QWidget):
                 
                 # Et on actualise le tableau pour voir la nouvelle balise !
                 self.charger_balises_api()
+
+            elif reponse.status_code == 401 or "expir" in reponse.text.lower():
+                QApplication.restoreOverrideCursor() # On remet la souris normale avant le message
+                
+                # On prévient l'utilisateur
+                QMessageBox.warning(self, "Session expirée", "Votre session a expiré.\nVeuillez vous reconnecter.")
+                
+                # On déclenche la déconnexion générale du main.py !
+                if hasattr(self.window(), 'se_deconnecter'):
+                    self.window().se_deconnecter()
+                    
+                    # Une fois reconnecté, on retente l'actualisation du tableau
+                    self.charger_balises_api()
+                    
+            # 8. Les autres erreurs (ex: Erreur 403 = Pas les droits)
             else:
                 QMessageBox.critical(self, "Erreur Serveur", f"Erreur {reponse.status_code} : {reponse.text}")
                 
@@ -366,18 +384,21 @@ class ConfigPage(QWidget):
 
     def pre_remplir_donnees_lora(self, lat, lon, id_balise):
         """Remplit automatiquement le formulaire quand une donnée LoRa arrive"""
+
+        # Si on es en train d'écrire dans la case "Nom", rien ne change
+        if self.in_nom.hasFocus():
+            return
+        
         # On remplit l'ID
         self.in_id.setText(str(id_balise))
         
-        # On remplit les coordonnées (en remplaçant le point par une virgule pour ton interface)
+        # On remplit les coordonnées (en remplaçant le point par une virgule pour l'interface)
         self.in_lat.setText(str(lat).replace('.', ','))
         self.in_lon.setText(str(lon).replace('.', ','))
         
         print(f"Formulaire pré-rempli avec la balise {id_balise}")
 
-    # ==============================================================================
     # FONCTION : Supprimer la balise sélectionnée dans le tableau
-    # ==============================================================================
     def supprimer_balise(self):
         # 1. On regarde quelle ligne du tableau est sélectionnée
         row = self.table_balises.currentRow()
@@ -398,7 +419,7 @@ class ConfigPage(QWidget):
         
         if reponse == QMessageBox.StandardButton.Yes:
             url = f"{config.API_URL}/api/balises/{id_sql}"
-            headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             
             # 4. On demande à l'API de supprimer la balise (DELETE)

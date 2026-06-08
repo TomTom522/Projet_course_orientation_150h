@@ -7,285 +7,241 @@ import config
 import re
 from PyQt6.QtCore import QThread, pyqtSignal
 
-# LoraThread hérite de QThread. C'est un processus qui tourne en parallèle de ton interface.
-# S'il n'y avait pas ça, le logiciel gèlerait complètement en attendant des données.
 class LoraThread(QThread):
-    # Création des "Signaux". C'est comme des petits messages que ce thread peut crier
-    # pour que l'interface graphique (main.py) les entende et réagisse.
-    status_signal = pyqtSignal(str, str) # Envoie un texte et une couleur
-    battery_signal = pyqtSignal(str) # Envoie le niveau de batterie en texte
-    position_signal = pyqtSignal(float, float, str) # Envoie lat, lon et l'ID de la balise
+    # signaux recuperé pour que (main.py) les entende et réagisse
+    status_signal = pyqtSignal(str, str) # texte + couleur
+    battery_signal = pyqtSignal(str, str) # niveau batt + couleur
+    position_signal = pyqtSignal(float, float, str) # Lat, Lon, id_balise
+    rfid_signal = pyqtSignal(str, str) # code RFID lu
+    scan_result_signal = pyqtSignal(str, str, bool, str) #scan resultat final
     
-    # MODIFICATION ICI : On envoie maintenant deux chaînes de caractères (ID balise, Code RFID)
-    rfid_signal = pyqtSignal(str, str) 
+    def charger_donnees_api(self):
+        """Charge ou rafraîchit la liste des équipes depuis l'API"""
+        url = f"{config.API_URL.rstrip('/')}/api/equipes"
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
+        try:
+            r = requests.get(url, headers=headers, timeout=5, proxies={"http": None, "https": None})
+            if r.status_code == 200:
+                self.equipes_locales = r.json()
+                print(f"[LORA] {len(self.equipes_locales)} équipes chargées.")
+        except Exception as e:
+            print(f"[LORA ERREUR] API injoignable : {e}")
 
-    # La fonction 'run' contient le code qui va tourner en boucle dans l'arrière-plan
+
+    def stop(self):
+        self.is_running = False
+        if hasattr(self, 'ser') and self.ser.is_open:
+            try: self.ser.close()
+            except: pass
+        self.quit()
+        self.wait()
+
     def run(self):
+        self.is_running = True
         print(f"[*] Démarrage de la connexion sur : {config.SERIAL_PORT}")
         
-        # ==========================================
-        # MODE SIMULATION (SANS ANTENNE)
-        # Pratique quand tu développes sur ton PC sans le vrai matériel
-        # ==========================================
         if config.SERIAL_PORT == "SIMULATEUR": 
-            
-            # Position de départ (Centre de Rodez)
             lat, lon = 44.350000, 2.570000 
-            
-            # Boucle infinie
-            while True:
-                # On fait bouger la balise aléatoirement (un petit peu à chaque fois)
+            while self.is_running:
                 lat = round(lat + random.uniform(-0.00001, 0.0001), 6)
                 lon = round(lon + random.uniform(-0.00001, 0.0001), 6)
-                
-                # Création d'un faux paquet de données (ID 11)
-                data = {
-                    "id": 11, 
-                    "lat": lat, 
-                    "lon": lon, 
-                    "batterie": random.randint(70, 100) # Batterie aléatoire
-                }
-                print(f"[SIMULATION] Nouvelles coordonnées : {data}")
-                
-                # 1. Envoi à l'interface (PyQt6) : On "émet" les signaux
+                data = {"id": 1, "lat": lat, "lon": lon, "batterie": random.randint(70, 100)}
                 self.position_signal.emit(float(data['lat']), float(data['lon']), str(data['id']))
-                self.battery_signal.emit(f"{data['batterie']}%")
-                
-                # 2. Envoi à l'API backend Node.js
+                self.battery_signal.emit(f"{data['batterie']}%", str(data['id']))
                 self.envoie_api(data)
-                
-                # Pause de 3 secondes avant de simuler le prochain point
-                time.sleep(3)
-
-        # ==========================================
-        # MODE RÉEL (AVEC LA VRAIE ANTENNE USB)
-        # ==========================================
+                for _ in range(35):
+                    if not self.is_running: break
+                    time.sleep(0.1)
         else:
             try:
-                # Ouverture du port USB. ATTENTION: Modifié en self.ser pour pouvoir écrire dessus plus tard
                 self.ser = serial.Serial(config.SERIAL_PORT, config.BAUD_RATE, timeout=1)
-                # On prévient l'interface que c'est connecté !
                 self.status_signal.emit("CONNECTÉ", "#2CC985")
-                
-                while True:
-                    # S'il y a des données qui attendent dans le port USB
+                while self.is_running:
                     if self.ser.in_waiting > 0:
                         try:
-                            # On lit la ligne, la décode en UTF-8, et on enlève les espaces vides
                             line = self.ser.readline().decode('utf-8', errors='replace').strip()
-                            if not line: 
-                                continue
+                            if not line: continue
                             
-                            # --- 1. DÉTECTION DU MESSAGE RFID (TEXTE BRUT) ---
-                            # On cherche le format : "Message reçu du node X : XX XX XX..."
                             rfid_match = re.search(r"Message reçu du node (\d+)\s*:\s*(.*)", line)
                             
                             if rfid_match:
                                 node_id = rfid_match.group(1)
-                                rfid_tag_brut = rfid_match.group(2).strip().upper()
+                                raw_hex_payload = rfid_match.group(2).strip()
                                 
-                                # --- Décodage du double héxadécimal pour avoir le bon RFID ---
+                                # ÉTAPE 1 : DÉCODAGE
                                 try:
-                                    # 1. On transforme "46 41 34" en "FA4"
-                                    tag_lettres = "".join([chr(int(x, 16)) for x in rfid_tag_brut.split()])
-                                    # 2. On remet les espaces tous les 2 caractères pour avoir "FA 48 8D 2E"
-                                    rfid_tag = " ".join([tag_lettres[i:i+2] for i in range(0, len(tag_lettres), 2)])
-                                except Exception:
-                                    # Sécurité : si un jour l'antenne envoie le bon format direct, on ne plante pas
-                                    rfid_tag = rfid_tag_brut 
+                                    texte_decode = "".join([chr(int(x, 16)) for x in raw_hex_payload.split() if len(x) == 2])
+                                except:
+                                    texte_decode = raw_hex_payload
+                                texte_decode = texte_decode.upper()
+
+                                # ÉTAPE 2 : TRI DU MESSAGE
+
+                                # --- A. CAS DU GPS (Texte avec virgule et point) ---
+                                if "," in texte_decode and "." in texte_decode:
+                                    try:
+                                        parts = texte_decode.split(',')
+                                        lat = float(re.sub(r'[^0-9.-]', '', parts[0]))
+                                        lon = float(re.sub(r'[^0-9.-]', '', parts[1]))
+                                        
+                                        # On ignore si le GPS cherche encore son signal (0.0, 0.0)
+                                        if lat == 0.0 and lon == 0.0:
+                                            continue
+                                            
+                                        self.position_signal.emit(lat, lon, str(node_id))
+                                        self.envoie_api({"id": node_id, "lat": lat, "lon": lon})
+                                        continue # C'était un GPS, on arrête là !
+                                    except ValueError:
+                                        pass
+
+                                clean_content = re.sub(r'[^A-Z0-9%]', '', texte_decode)
+
+                                # --- B. CAS DE LA BATTERIE ---
+                                if "BAT" in clean_content or "%" in clean_content:
+                                    val_bat = "".join(filter(str.isdigit, clean_content))
+                                    if val_bat:
+                                        self.battery_signal.emit(f"{val_bat}%", str(node_id))
+                                        self.envoie_api({"id": node_id, "batterie": val_bat})
+                                    continue
+
+                                # --- C. CAS DU BADGE RFID ---
+                                # Un vrai badge ne contient que des lettres de A à F et des chiffres.
+                                clean_rfid = re.sub(r'[^A-F0-9]', '', texte_decode)
+                                
+                                # Sécurité : Si le code est trop court, on l'ignore
+                                if len(clean_rfid) < 6:
+                                    continue
+
+                                # On remet de jolis espaces pour l'interface
+                                rfid_tag = " ".join([clean_rfid[i:i+2] for i in range(0, len(clean_rfid), 2)])
 
                                 print(f"[RFID DÉTECTÉ] Node: {node_id} | Tag: {rfid_tag}")
-                                
-                                # On envoie l'ID ET le tag à main.py
                                 self.rfid_signal.emit(str(node_id), rfid_tag)
                                 
-                                # NOUVEAU : On lance l'arbitre !
-                                self.verifier_et_enregistrer_scan(node_id, rfid_tag)
-                                
-                                continue # On passe à la ligne suivante, pas besoin de tester le JSON
+                                # On lance la vérification API
+                                self.enregistrer_scan_et_valider(node_id, rfid_tag)
+                                continue
 
-                            # --- 2. DÉTECTION DES DONNÉES GPS/BATTERIE (JSON) ---
-                            # On ne tente le JSON que si la ligne commence par une accolade
+                            # --- DÉTECTION DU FORMAT JSON NORMAL ---
                             if line.startswith('{'):
                                 try:
                                     data = json.loads(line)
-                                    print(f"[LORA RECU] {data}")
-                                    
-                                    # Signal GPS
+                                    id_emetteur = str(data.get('id', '1'))
                                     if 'lat' in data and 'lon' in data:
-                                        self.position_signal.emit(float(data['lat']), float(data['lon']), str(data.get('id', '1')))
-                                    
-                                    # Signal Batterie
+                                        self.position_signal.emit(float(data['lat']), float(data['lon']), id_emetteur)
                                     if 'batterie' in data:
-                                        self.battery_signal.emit(f"{data['batterie']}%")
-                                    
-                                    # Signal RFID (si envoyé sous forme de JSON par une autre balise)
+                                        self.battery_signal.emit(f"{data['batterie']}%", id_emetteur)
                                     if 'rfid' in data:
-                                        id_emetteur = str(data.get('id', 'Inconnu'))
-                                        self.rfid_signal.emit(id_emetteur, str(data['rfid']))
-                                        
-                                        # NOUVEAU : On lance l'arbitre ici aussi si le RFID passe par JSON
-                                        if id_emetteur != 'Inconnu':
-                                            self.verifier_et_enregistrer_scan(id_emetteur, str(data['rfid']))
-
-                                    # Envoi vers la base de données (API Docker)
+                                        tag = str(data['rfid'])
+                                        self.rfid_signal.emit(id_emetteur, tag)
+                                        self.enregistrer_scan_et_valider(id_emetteur, tag)
                                     self.envoie_api(data)
-                                    
-                                except json.JSONDecodeError:
-                                    print(f"[ERREUR JSON] Ligne corrompue : {line}")
-                            else:
-                                # Si ce n'est ni du RFID connu, ni du JSON, c'est un message de debug
-                                print(f"[DEBUG ESP32] {line}")
+                                except json.JSONDecodeError: pass
 
-                            # Petite pause pour ne pas surcharger le processeur
-                            time.sleep(0.05)
-
-                        except Exception as e:
-                            print(f"Erreur de traitement ligne: {e}")
-                    time.sleep(0.01) # Fréquence d'écoute du port série
-            
-            # CE BLOC ÉTAIT MANQUANT
+                        except Exception as e: print(f"Erreur de lecture ligne: {e}")
+                    time.sleep(0.01)
             except Exception as e:
-                # Si le port n'est pas trouvé (antenne débranchée par ex.)
                 self.status_signal.emit("ERREUR PORT", "red")
-                print(f"Erreur critique Serial: {e}")
 
-    # Fonction pour envoyer les données LoRa vers l'API externe (Docker)
     def envoie_api(self, data):
-        """Envoie les trames décodées vers l'API backend"""
         try:
-            # Sécurité via clé API présente dans config.py
-            headers = {"Authorization": f"ApiKey {config.API_KEY}", "Content-Type": "application/json"}
-            id_b = int(data.get('id', 1)) # On récupère l'ID, par défaut 1
-            
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}", "Content-Type": "application/json"}
+            id_b = int(data.get('id', 1))
             if 'batterie' in data:
-                url = f"{config.API_URL}/api/releves-batterie"
-                # Requête POST pour enregistrer un nouveau niveau de batterie
-                requests.post(url, json={"id_balise": id_b, "niveau_batterie": int(data['batterie'])}, headers=headers, timeout=2)
-                
+                requests.post(f"{config.API_URL}/api/releves-batterie", json={"id_balise": id_b, "niveau_batterie": int(data['batterie'])}, headers=headers, timeout=2)
             elif 'lat' in data and 'lon' in data:
-                url = f"{config.API_URL}/api/balises/{id_b}"
-                # Requête PUT pour modifier la position actuelle de la balise dans la BDD
-                requests.put(url, json={"latitude": float(data['lat']), "longitude": float(data['lon'])}, headers=headers, timeout=2)
-        except Exception as e:
-            pass # On ignore les erreurs API
+                requests.put(f"{config.API_URL}/api/balises/{id_b}", json={"latitude": float(data['lat']), "longitude": float(data['lon'])}, headers=headers, timeout=2)
+        except: pass
 
-    # ==========================================
-    # FONCTIONS : L'ARBITRE DE LA COURSE
-    # ==========================================
-    def verifier_et_enregistrer_scan(self, balise_scannee_id, rfid_tag):
-        """
-        Fait l'enquête en direct sur l'API pour savoir si le scan est valide ou non.
-        """
-        headers = {
-            "Authorization": f"ApiKey {config.API_KEY}", 
-            "Content-Type": "application/json"
-        }
+    def enregistrer_scan_et_valider(self, id_balise, rfid_tag):
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}", "Content-Type": "application/json"}
         base_url = config.API_URL
-
+        
         try:
-            # --- ETAPE 1 : Trouver l'ID du badge ---
+            # 1. Récupérer tous les badges pour trouver l'ID correspondant au tag physique
             resp_badges = requests.get(f"{base_url}/api/badges", headers=headers).json()
-            if type(resp_badges) is not list:
-                print(f"[ARBITRE] L'API a renvoyé une erreur au lieu des badges : {resp_badges}")
-                return False
-
-            badge_id = None
-            for b in resp_badges:
-                if b.get('tag_rfid', '').replace(' ', '') == rfid_tag.replace(' ', ''):
-                    badge_id = b['id']
-                    break
+            if not isinstance(resp_badges, list): return
             
-            if not badge_id:
-                print(f"[ARBITRE] Badge {rfid_tag} inconnu dans la BDD.")
-                return False
+            tag_nettoye = rfid_tag.replace(' ', '').upper()
+            
+            badge_trouve = next((b for b in resp_badges if b.get('tag_rfid', '').replace(' ', '').upper() == tag_nettoye), None)
+            
+            if not badge_trouve:
+                print(f"[ARBITRE] Tag {tag_nettoye} non trouvé dans la base de données badges")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), "Inconnu", False, "Badge non enregistré")
+                return
 
-            # --- ETAPE 2 : Trouver l'équipe associée ---
+            badge_id_technique = badge_trouve['id']
+
+            # 2. On cherche l'équipe liée à cet ID de badge
             resp_equipes = requests.get(f"{base_url}/api/equipes", headers=headers).json()
-            equipe = None
-            if type(resp_equipes) is list:
-                for e in resp_equipes:
-                    if e.get('id_badge') == badge_id:
-                        equipe = e
-                        break
-            
-            if not equipe:
-                print(f"[ARBITRE] Aucune équipe n'utilise le badge {rfid_tag}.")
-                return False
 
-            id_equipe = equipe.get('id')
+            print(f"[DEBUG ARBITRE] Badge cherché (technique): {badge_id_technique} (type: {type(badge_id_technique)})")
+            for e in resp_equipes:
+                print(f"[DEBUG ARBITRE] Equipe: {e.get('nom_equipe')} | id_badge={e.get('id_badge')} (type: {type(e.get('id_badge'))})")
+
+            equipe = next((e for e in resp_equipes if str(e.get('id_badge')) == str(badge_id_technique)), None)
+            
+            # 3. Vérification de l'attribution
+            if not equipe:
+                print(f"[ARBITRE] Aucune équipe n'est liée au badge technique n°{badge_id_technique} ({tag_nettoye})")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), "Inconnu", False, "Badge non attribué")
+                return
+
+            nom_eq = equipe.get('nom_equipe', "Équipe sans nom")
             id_course = equipe.get('id_course_actuelle')
 
-            # SÉCURITÉ : Vérifier que l'équipe est bien rattachée à une course
+            # 4. Vérification de la course active
             if not id_course:
-                print(f"[ARBITRE] L'équipe '{equipe.get('nom_equipe')}' n'a aucune 'id_course_actuelle' définie en BDD !")
-                return False
+                print(f"[ARBITRE] {nom_eq} est bien reconnue mais n'a pas de course active.")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, "Équipe sans course")
+                return
 
-            # --- ETAPE 3 : Récupérer le scénario de l'équipe ---
-            url_scenario = f"{base_url}/api/ordre-balises/course/{id_course}/equipe/{id_equipe}"
-            scenario = requests.get(url_scenario, headers=headers).json()
+            # 5. Résoudre le node_id LoRa → id_sql de la balise
+            resp_balises = requests.get(f"{base_url}/api/balises", headers=headers).json()
             
-            # SÉCURITÉ : Vérifier que le scénario est bien une liste et pas un message d'erreur
-            if type(scenario) is not list:
-                print(f"[ARBITRE] Erreur API sur le scénario (Course {id_course}, Equipe {id_equipe}) : {scenario}")
-                return False
-
-            # On s'assure que c'est bien trié par position
-            scenario_trie = sorted(scenario, key=lambda x: x.get('position_balise', 0))
-            ordre_attendu = [etape['id_balise'] for etape in scenario_trie]
-
-            if len(ordre_attendu) == 0:
-                print(f"[ARBITRE] Le scénario de l'équipe '{equipe.get('nom_equipe')}' est vide (aucune balise assignée) !")
-                return False
-
-            # --- ETAPE 4 : Regarder l'historique pour savoir où ils en sont ---
-            url_etat = f"{base_url}/api/etat-course/course/{id_course}"
-            historique = requests.get(url_etat, headers=headers).json()
+            # DEBUG TEMPORAIRE - à supprimer une fois résolu
+            print(f"[DEBUG BALISES] Node reçu : '{id_balise}' (type: {type(id_balise)})")
+            for b in resp_balises:
+                print(f"[DEBUG BALISES] BDD → lora_id='{b.get('lora_id')}' (type: {type(b.get('lora_id'))}) | id_sql={b.get('id')}")
             
-            # On compte combien de bonnes balises cette équipe a déjà bipé
-            nb_valides = 0
-            if type(historique) is list:
-                for passage in historique:
-                    if passage.get('id_equipe') == id_equipe and passage.get('valide') == True:
-                        nb_valides += 1
+            balise_sql = next(
+                (b for b in resp_balises if str(b.get('lora_id')) == str(id_balise)),
+                None
+            )
+            
+            if not balise_sql:
+                print(f"[ARBITRE] Node LoRa '{id_balise}' non trouvé dans les balises configurées")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, "Balise non configurée dans le système")
+                return
+            
+            id_balise_sql = balise_sql.get('id') or balise_sql.get('id_balise')
+            print(f"[ARBITRE] Node LoRa {id_balise} → ID SQL balise : {id_balise_sql}")
+
+            # 6. Envoi de la validation à l'API avec l'ID SQL de la balise
+            payload = {"id_course": id_course, "id_equipe": equipe['id']}
+            url_validation = f"{base_url}/api/validation/{id_balise_sql}"
+            response = requests.post(url_validation, json=payload, headers=headers, timeout=3)
+            
+            if response.status_code == 201:
+                print(f"[ARBITRE API] Balise {id_balise_sql} (node {id_balise}) validée pour {nom_eq} !")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "OK"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, True, "Validé !")
             else:
-                print(f"[ARBITRE DEBUG] L'historique n'est pas une liste ou est vide : {historique}")
+                msg = response.json().get('error', 'Refusé')
+                print(f"[ARBITRE API] Erreur validation: {msg}")
+                self._envoyer_ordre_lora(f'{{"target": {id_balise}, "status": "ERR"}}\n')
+                self.scan_result_signal.emit(str(id_balise), nom_eq, False, msg)
 
-            # --- ETAPE 5 : La Comparaison ! ---
-            if nb_valides >= len(ordre_attendu):
-                print(f"[ARBITRE] L'équipe '{equipe.get('nom_equipe')}' a déjà fini la course !")
-                est_valide = False
-            else:
-                balise_attendue = ordre_attendu[nb_valides]
-                # On compare (en string pour éviter les soucis de int/str)
-                est_valide = (str(balise_scannee_id) == str(balise_attendue))
-
-            # --- ETAPE 6 : Enregistrement dans la BDD ---
-            payload_etat = {
-                "id_course": id_course,
-                "id_equipe": id_equipe,
-                "id_balise": int(balise_scannee_id),
-                "valide": est_valide
-            }
-            requests.post(f"{base_url}/api/etat-course", json=payload_etat, headers=headers)
-
-            # --- ETAPE 7 : Envoi du signal physique à l'antenne ---
-            if est_valide:
-                print(f"[ARBITRE] ✅ Équipe '{equipe.get('nom_equipe')}' - BONNE BALISE ({balise_scannee_id}) !")
-                self._envoyer_ordre_lora(f'{{"target": {balise_scannee_id}, "status": "OK"}}\n')
-            else:
-                attendu = ordre_attendu[nb_valides] if nb_valides < len(ordre_attendu) else "FIN"
-                print(f"[ARBITRE] ❌ Équipe '{equipe.get('nom_equipe')}' - MAUVAISE BALISE (scanné: {balise_scannee_id}, attendu: {attendu})")
-                self._envoyer_ordre_lora(f'{{"target": {balise_scannee_id}, "status": "ERR", "next": {attendu}}}\n')
-
-        except Exception as e:
-            print(f"[ARBITRE ERREUR] Impossible de vérifier le badge : {e}")
+        except Exception as e: 
+            print(f"[ERREUR CRITIQUE ARBITRE] : {e}")
 
     def _envoyer_ordre_lora(self, message_str):
-        """Écrit sur le port série USB pour que l'antenne Master transmette à la balise"""
         try:
-            # On vérifie que la connexion existe bien et est ouverte
             if hasattr(self, 'ser') and self.ser.is_open:
                 self.ser.write(message_str.encode('utf-8'))
-        except Exception as e:
-            print(f"[ERREUR LORA] Impossible d'envoyer la commande : {e}")
+        except: pass

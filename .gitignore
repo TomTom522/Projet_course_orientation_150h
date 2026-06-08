@@ -4,3 +4,4 @@ __pycache__/
 gui_modules/__pycache__/
 ~$*
 .venv/
+session.json

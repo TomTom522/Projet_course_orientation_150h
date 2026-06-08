@@ -5,11 +5,31 @@ from datetime import datetime
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, 
                              QFrame, QLabel, QTableWidget, QTableWidgetItem, 
                              QHeaderView, QPushButton, QScrollArea)
-from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer
-from PyQt6.QtGui import QColor
-from PyQt6.QtGui import QCursor
+from PyQt6.QtGui import QColor, QCursor
 from gui_modules.map_page import MapPage
+
+def distance_balise(lat1, lon1, lat2, lon2):
+    """
+    Calcule la distance en mètres entre deux coordonnées GPS 
+    (Formule de Haversine)
+    """
+    if None in (lat1, lon1, lat2, lon2):
+        return 0.0
+        
+    R = 6371000  # Rayon de la Terre en mètres
+    
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    
+    a = math.sin(dphi / 2)**2 + \
+        math.cos(phi1) * math.cos(phi2) * \
+        math.sin(dlambda / 2)**2
+        
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    
+    return R * c # Distance en mètres
 
 class StatusCard(QFrame):
     def __init__(self, text): 
@@ -39,6 +59,10 @@ class Cartemeteo(QFrame):
         self.setFixedWidth(350)
         self.donnees_forecast = []
         self.jour_selectionne = 0
+        # Coordonnées par défaut (Rodez)
+        self.lat_actuelle = 44.35
+        self.lon_actuelle = 2.57
+        self.ville_actuelle = "Rodez"
 
         self.setObjectName("MeteoCard")
         self.setStyleSheet("""
@@ -61,7 +85,7 @@ class Cartemeteo(QFrame):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(5)
         self.btn_jours = []
-        for i, nom in enumerate(["Auj.", "Demain", "J+2", "J+3"]):
+        for i, nom in enumerate(["Auj.", "Demain", "J+2"]):
             btn = QPushButton(nom)
             btn.setObjectName("JourBtn")
             btn.setCheckable(True)
@@ -75,7 +99,7 @@ class Cartemeteo(QFrame):
         # Température + détails
         info_layout = QHBoxLayout()
         self.lbl_temp = QLabel("--°C")
-        self.lbl_temp.setStyleSheet("font-size: 28px; font-weight: bold; color: white;")
+        self.lbl_temp.setStyleSheet("font-size: 25px; font-weight: bold; color: white;")
         info_layout.addWidget(self.lbl_temp)
 
         details_layout = QVBoxLayout()
@@ -87,15 +111,18 @@ class Cartemeteo(QFrame):
         self.lbl_wind.setStyleSheet("font-size: 12px; color: white;")
         self.lbl_hum = QLabel("Humidité: --%")
         self.lbl_hum.setStyleSheet("font-size: 12px; color: white;")
+        self.lbl_soleil = QLabel("🌅 --:-- | 🌇 --:--")
+        self.lbl_soleil.setStyleSheet("font-size: 12px; color: white; font-weight: bold;")
         details_layout.addWidget(self.lbl_city)
         details_layout.addWidget(self.lbl_desc)
         details_layout.addWidget(self.lbl_wind)
         details_layout.addWidget(self.lbl_hum)
+        details_layout.addWidget(self.lbl_soleil)
         info_layout.addLayout(details_layout)
         main_layout.addLayout(info_layout)
 
-        # Indicateur course (texte uniquement, pas de changement de couleur)
-        self.lbl_course = QLabel("⏳ Chargement de l'analyse...")
+        # Indicateur course
+        self.lbl_course = QLabel("Chargement de l'analyse...")
         self.lbl_course.setWordWrap(True)
         self.lbl_course.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lbl_course.setStyleSheet("""
@@ -128,7 +155,12 @@ class Cartemeteo(QFrame):
             self.lbl_temp.setText(f"{d['mintemp_c']}°C / {d['maxtemp_c']}°C")
             self.lbl_desc.setText(d['condition']['text'])
             self.lbl_wind.setText(f"Vent max: {d['maxwind_kph']} km/h")
-            self.lbl_hum.setText(f"Humidité: {d['avghumidity']}%")
+        
+        # Mise à jour du soleil
+        astro = day.get('astro', {})
+        lever = astro.get('sunrise', '--')
+        coucher = astro.get('sunset', '--')
+        self.lbl_soleil.setText(f"🌅 {lever}  |  🌇 {coucher}")
 
         self._evaluer_course(day)
 
@@ -156,6 +188,12 @@ class Cartemeteo(QFrame):
         else:
             self.lbl_course.setText(f"Déconseillé : {', '.join(problemes)}")
 
+    def mettre_a_jour_position(self, lat, lon, nom_balise="Position"):
+        self.lat_actuelle = lat
+        self.lon_actuelle = lon
+        self.ville_actuelle = nom_balise
+        self.lbl_city.setText(f"Météo à {nom_balise}")
+
     def mettre_a_jour(self, current_data, forecast_days):
         self._current_data = current_data
         self.donnees_forecast = forecast_days
@@ -163,15 +201,21 @@ class Cartemeteo(QFrame):
 
 
 class DashboardPage(QWidget):
-    # Permet d'envoyer les logs à la page Historique globale !
     nouveau_log_signal = pyqtSignal(str, str, str, str)
 
     def __init__(self):
         super().__init__()
+
+        self.dernieres_positions = {}
         self.last_map_update = 0
         self.setStyleSheet("background-color: #f4f7f6;") 
-        self.ancrage_position = None  
-        self.distance_limite = 20.0   
+        
+        # --- ANCRAGE INDIVIDUEL ---
+        self.ancrage_positions = {}   # Un dictionnaire pour stocker le départ de CHAQUE balise
+        #self.compteurs_ancrage = {}    # Compte les messages avant de valider l'ancrage
+        self.distance_limite = 80.0    # Seuil d'alerte (augmenté un peu pour la précision GPS)
+        # -------------------------------------
+        
         self.team_rows = {}           
         self.balise_cards = {} 
         self.current_balise_widgets = []
@@ -195,21 +239,40 @@ class DashboardPage(QWidget):
         lbl_dash = QLabel("Live Monitoring")
         lbl_dash.setStyleSheet("font-size: 20px; font-weight: bold; color: #1e293b;")
         
-        self.btn_refresh = QPushButton("Actualiser")
+        self.btn_refresh = QPushButton("🔄 Actualiser")
         self.btn_refresh.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_refresh.setStyleSheet("QPushButton { background-color: #3498db; color: white; font-weight: bold; padding: 6px 12px; border-radius: 6px; border: none; } QPushButton:hover { background-color: #2980b9; }")
-        self.btn_refresh.clicked.connect(self.charger_balises_api)
+        self.btn_refresh.setStyleSheet("""
+            QPushButton { 
+                background-color: #3498db; color: white; font-weight: bold; 
+                padding: 6px 12px; border-radius: 6px; border: none; 
+            } 
+            QPushButton:hover { background-color: #2980b9; }
+        """)
+        # cela active le bouton :
+        self.btn_refresh.clicked.connect(self.rafraichir_tout)
         
         header_h.addWidget(lbl_dash)
         header_h.addStretch()
+        
         header_h.addWidget(self.btn_refresh)
+
+        self.btn_reset_ancrage = QPushButton("Reset Ancrages")
+        self.btn_reset_ancrage.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_reset_ancrage.setStyleSheet("""
+            QPushButton { 
+                background-color: #e67e22; color: white; font-weight: bold; 
+                padding: 6px 12px; border-radius: 6px; border: none; 
+            } 
+            QPushButton:hover { background-color: #d35400; }
+        """)
+        self.btn_reset_ancrage.clicked.connect(self.reset_tous_les_ancrages)
+        header_h.addWidget(self.btn_reset_ancrage)
         left_layout.addLayout(header_h)
         left_layout.addSpacing(10)
 
-        self.weather_card = Cartemeteo()  # ajout de la meteo
+        self.weather_card = Cartemeteo()
         left_layout.addWidget(self.weather_card)
         left_layout.addSpacing(15)
-
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -221,7 +284,6 @@ class DashboardPage(QWidget):
         self.left_grid.setContentsMargins(0, 0, 0, 0)
         self.left_grid.setSpacing(12)
         
-
         self.scroll_area.setWidget(self.grid_widget)
         left_layout.addWidget(self.scroll_area)
         top_layout.addWidget(left_panel_container)
@@ -237,12 +299,11 @@ class DashboardPage(QWidget):
         top_layout.addWidget(map_container, stretch=1)
         main_layout.addWidget(top_section, stretch=2)
 
-        # Section du bas avec l'intégration du bouton
         bottom_section = QWidget()
         bottom_section.setMinimumHeight(250)
         bottom_layout = QHBoxLayout(bottom_section)
 
-        self.table_team = self.create_table(["Equipe/Balise", "Latitude", "Longitude", "Batterie", "Scenario"])
+        self.table_team = self.create_table(["Balise", "Latitude", "Longitude", "Batterie", "Scenario"])
         vbox1 = QVBoxLayout()
         
         header_tables = QHBoxLayout()
@@ -268,12 +329,16 @@ class DashboardPage(QWidget):
         main_layout.addWidget(bottom_section, stretch=1)
 
         self.charger_balises_api()
-        self.charger_donnees_tableaux() # Chargement au lancement
-
-        self.mise_a_jour_meteo() # Lance la météo immédiatement
+        self.charger_donnees_tableaux()
+        self.mise_a_jour_meteo()
+        
         self.timer_meteo = QTimer(self)
         self.timer_meteo.timeout.connect(self.mise_a_jour_meteo)
-        self.timer_meteo.start(3600000) # Mise à jour toutes les heures (3600s * 1000ms)
+        self.timer_meteo.start(3600000)
+
+        self.timer_live = QTimer(self)
+        self.timer_live.timeout.connect(self.actualiser_donnees_live)
+        self.timer_live.start(70000)
 
         self.ajouter_log(datetime.now().strftime("%H:%M:%S"), "Système", "Démarrage", "Dashboard initialisé avec succès", "#3498db")
 
@@ -297,26 +362,44 @@ class DashboardPage(QWidget):
         self.table_log.setItem(0, 3, QTableWidgetItem(detail))
         if self.table_log.rowCount() > 50:
             self.table_log.removeRow(50)
-            
-        #On envoie ce log vers la page Historique globale 
         self.nouveau_log_signal.emit(source, evenement, detail, couleur)
 
+    def reset_tous_les_ancrages(self):
+        """ Réinitialise les points de référence de toutes les balises """
+        self.ancrage_positions.clear()
+        #self.compteurs_ancrage.clear()
+        self.alertes_mouvement.clear()
+        self.ajouter_log(datetime.now().strftime("%H:%M:%S"), "Système", "Reset Manuel", "Toutes les positions de référence ont été effacées", "#e67e22")
 
     def mise_a_jour_meteo(self):
         api_key = "a6f6fef1470f473cb0694459230605"
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q=Rodez&lang=fr&days=4"
-        
+        coords = f"{self.weather_card.lat_actuelle},{self.weather_card.lon_actuelle}"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q={coords}&lang=fr&days=4"
         try:
             res = requests.get(url, timeout=5)
             if res.status_code == 200:
                 data = res.json()
-                current = data['current']
-                forecast_days = data['forecast']['forecastday']
-                self.weather_card.mettre_a_jour(current, forecast_days)
-            else:
-                print(f"Erreur météo code: {res.status_code}")
-        except Exception as e:
-            print(f"Erreur météo: {e}")
+                self.weather_card.mettre_a_jour(data['current'], data['forecast']['forecastday'])
+        except: pass
+
+    def actualiser_donnees_live(self):
+        self.charger_balises_api()
+        self.charger_donnees_tableaux()
+
+    def rafraichir_tout(self):
+        """ Actualise UNIQUEMENT les cartes des balises en haut """
+        
+        # 1. On efface visuellement les anciennes cartes de l'écran
+        while self.left_grid.count():
+            item = self.left_grid.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+                
+        # 2. On vide la mémoire des cartes du haut
+        self.balise_cards.clear()
+
+        # 3. On va chercher les infos sur l'API pour recréer les cartes en haut
+        self.charger_balises_api()
 
 
     def charger_balises_api(self):
@@ -329,7 +412,7 @@ class DashboardPage(QWidget):
         self.balise_cards.clear()
         
         url = f"{config.API_URL}/api/balises"
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         self.btn_refresh.setText("Chargement...")
         self.btn_refresh.setEnabled(False)
 
@@ -338,126 +421,137 @@ class DashboardPage(QWidget):
             reponse = requests.get(url, headers=headers, timeout=2, proxies={"http": None, "https": None})
             if reponse.status_code == 200:
                 balises_recues = reponse.json()
-        except Exception:
-            pass 
-
-        try:
-            reponse = requests.get(url, headers=headers, timeout=2, proxies={"http": None, "https": None})
-            if reponse.status_code == 200:
-                balises_recues = reponse.json()
-                
-                # --- Envoi à la carte ---
                 if hasattr(self.map_widget, 'afficher_balises'):
                     self.map_widget.afficher_balises(balises_recues)
-                # ----------------------------------
-                
-        except Exception:
-            pass
+        except Exception: pass
             
         lignes_a_afficher = max(3, len(balises_recues))
-
         for index in range(lignes_a_afficher):
             if index < len(balises_recues):
                 b = balises_recues[index]
                 nom = b.get("nom_balise", f"Balise {index+1}")
                 lora_id = str(b.get("lora_id", f"ID-{index}"))
-                
                 card_balise = StatusCard(f"{nom}\n({lora_id})\nHors ligne")
-                
                 card_status = StatusCard("Statut\nEn attente")
-                card_status.status_bar.setStyleSheet("background-color: #cbd5e1; border-radius: 2px; border: none;")
-
-                # On sauvegarde les DEUX widgets dans notre dictionnaire
-                self.balise_cards[lora_id] = {
-                    "widget": card_balise, 
-                    "widget_status": card_status, 
-                    "nom": nom
-                }
-
+                self.balise_cards[lora_id] = {"widget": card_balise, "widget_status": card_status, "nom": nom}
             else:
                 card_balise = StatusCard(f"Balise {index+1}\n(Non configuree)")
-                
-                card_balise.status_bar.setStyleSheet("background-color: #cbd5e1; border-radius: 2px; border: none;")
-                
                 card_status = StatusCard("-\n-")
-                card_status.status_bar.setStyleSheet("background-color: #cbd5e1; border-radius: 2px; border: none;")
 
-            # Ajout dans la grille (colonne 0 = gauche, colonne 1 = droite)
             self.left_grid.addWidget(card_balise, index, 0)
             self.left_grid.addWidget(card_status, index, 1)
-
-            # Ajout des deux à la liste pour pouvoir les nettoyer plus tard
             self.current_balise_widgets.extend([card_balise, card_status])
 
         self.btn_refresh.setText("Actualiser")
         self.btn_refresh.setEnabled(True)
 
-    # Remise au bon niveau d'indentation (aligné avec les autres "def")
     def charger_donnees_tableaux(self):
-        """Récupère les données de l'API avec des requêtes GET pour remplir les tableaux du bas."""
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
-        
-        # 1. Remplir le tableau de GAUCHE (Dernières coordonnées via /api/balises)
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         try:
             r_balises = requests.get(f"{config.API_URL}/api/balises", headers=headers, timeout=5)
+            r_courses = requests.get(f"{config.API_URL}/api/courses", headers=headers, timeout=5)
+            r_ordres = requests.get(f"{config.API_URL}/api/ordre-balises", headers=headers, timeout=5)
+
             if r_balises.status_code == 200:
                 balises = r_balises.json()
-                self.table_team.setRowCount(0) # Vider le tableau
+
+                # On construit un dictionnaire id_balise → nom_course
+                map_balise_course = {}
+                if r_courses.status_code == 200 and r_ordres.status_code == 200:
+                    courses = r_courses.json()
+                    ordres = r_ordres.json()
+
+                    # Dictionnaire id_course → nom_course
+                    map_courses = {
+                        str(c.get('id') or c.get('id_course')): c.get('nom_course', '?')
+                        for c in courses
+                    }
+
+                    # Pour chaque ordre, on lie id_balise → nom_course
+                    for o in ordres:
+                        id_b = str(o.get('id_balise'))
+                        id_c = str(o.get('id_course'))
+                        if id_b and id_c in map_courses:
+                            map_balise_course[id_b] = map_courses[id_c]
+
+                self.table_team.setRowCount(0)
                 self.team_rows.clear()
-                
+
                 for b in balises:
                     row = self.table_team.rowCount()
                     self.table_team.insertRow(row)
-                    
-                    nom = b.get("nom_balise", f"Balise {b.get('id', '?')}")
                     lora_id = str(b.get("lora_id", b.get("id", "?")))
-                    lat = b.get("latitude")
-                    lon = b.get("longitude")
-                    bat = b.get("status_batterie")
-                    scenario_api = b.get("nom_course")
-                    
-                    lat_str = f"{lat:.5f}" if lat is not None else "--"
-                    lon_str = f"{lon:.5f}" if lon is not None else "--"
-                    bat_str = f"{bat}%" if bat is not None else "--"
-                    
-                    self.team_rows[lora_id] = row
-                    
-                    self.table_team.setItem(row, 0, QTableWidgetItem(nom))
-                    self.table_team.setItem(row, 1, QTableWidgetItem(lat_str))
-                    self.table_team.setItem(row, 2, QTableWidgetItem(lon_str))
-                    self.table_team.setItem(row, 3, QTableWidgetItem(bat_str))
-                    self.table_team.setItem(row, 4, QTableWidgetItem(scenario_api))
-        except Exception as e:
-            print(f"Erreur API (Balises) : {e}")
+                    id_sql = str(b.get("id") or b.get("id_balise"))
+                    lat, lon = b.get("latitude"), b.get("longitude")
 
-        # 2. Remplir le tableau de DROITE (Journal local via /api/etat-course)
-        ID_COURSE_ACTUELLE = 22 
-        
+                    nom_course = map_balise_course.get(id_sql, "--")
+
+                    self.table_team.setItem(row, 0, QTableWidgetItem(b.get("nom_balise", "Balise")))
+                    self.table_team.setItem(row, 1, QTableWidgetItem(f"{lat:.5f}" if lat else "--"))
+                    self.table_team.setItem(row, 2, QTableWidgetItem(f"{lon:.5f}" if lon else "--"))
+                    self.table_team.setItem(row, 3, QTableWidgetItem(f"{b.get('status_batterie')}%" if b.get('status_batterie') else "--"))
+                    self.table_team.setItem(row, 4, QTableWidgetItem(nom_course))
+                    self.team_rows[lora_id] = row
+
+                if balises:
+                    derniere_balise = balises[-1]
+                    lat, lon = derniere_balise.get("latitude"), derniere_balise.get("longitude")
+                    nom = derniere_balise.get("nom_balise", "Balise")
+                    if lat and lon:
+                        self.weather_card.mettre_a_jour_position(lat, lon, nom)
+                        self.mise_a_jour_meteo()
+
+        except Exception as e:
+            print(f"Erreur charger_donnees_tableaux : {e}")
+
+        ID_COURSE_ACTUELLE = 22
         try:
             r_etat = requests.get(f"{config.API_URL}/api/etat-course/course/{ID_COURSE_ACTUELLE}", headers=headers, timeout=5)
             if r_etat.status_code == 200:
                 etats = r_etat.json()
-                self.table_log.setRowCount(0) # Vider le journal
-                
+                self.table_log.setRowCount(0)
                 for etat in etats[-30:]:
                     heure_brute = etat.get("created_at", datetime.now().strftime("%H:%M:%S"))
                     heure = heure_brute.split("T")[1][:8] if "T" in heure_brute else heure_brute
-                    
-                    equipe = f"Équipe {etat.get('id_equipe', '?')}"
-                    balise = f"Balise {etat.get('id_balise', '?')}"
-                    valide = etat.get("valide", False)
-                    
-                    evenement = "Passage validé" if valide else "Passage invalidé"
-                    couleur = "#27ae60" if valide else "#e74c3c"
-                    
-                    self.ajouter_log(heure, equipe, evenement, balise, couleur)
-        except Exception as e:
-            print(f"Erreur API (Etat Course) : {e}")
+                    self.ajouter_log(heure, f"Équipe {etat.get('id_equipe', '?')}", "Passage", f"Balise {etat.get('id_balise', '?')}")
+        except:
+            pass
 
     def update_dashboard_data(self, lat, lon, bat_level, balise_id):
-        now = datetime.now().strftime("%H:%M:%S")
         str_id = str(balise_id)
+        now = datetime.now().strftime("%H:%M:%S")
+        
+        # Initialisation de status_lines
+        status_lines = []
+        is_status_ok = True
 
+        # --- LOGIQUE D'ANCRAGE IMMÉDIAT (1 POINT) ---
+        if lat is not None and lon is not None:
+
+            nom_balise = self.balise_cards[str_id]["nom"] if str_id in self.balise_cards else f"Balise {str_id}"
+            self.weather_card.mettre_a_jour_position(lat, lon, nom_balise)
+            
+            if str_id not in self.ancrage_positions:
+                # Dès qu'on reçoit le tout premier point, on fixe l'ancre
+                self.ancrage_positions[str_id] = (lat, lon)
+                status_lines.append("Ancrage Fixé")
+                self.ajouter_log(now, f"Balise {str_id}", "Ancrage OK", "Position validée", "#27ae60")
+            else:
+                # L'ancrage est déjà fixé, on surveille le mouvement
+                ancrage = self.ancrage_positions[str_id]
+                dist = distance_balise(ancrage[0], ancrage[1], lat, lon)
+                
+                if dist > self.distance_limite:
+                    status_lines.append(f"ALERTE MOUV ({int(dist)}m)")
+                    is_status_ok = False
+                    if not self.alertes_mouvement.get(str_id, False):
+                        self.ajouter_log(now, f"Balise {str_id}", "DEPLACEMENT", f"Ecart de {int(dist)}m détecté !", "#e74c3c")
+                        self.alertes_mouvement[str_id] = True
+                else:
+                    status_lines.append("Position OK")
+                    self.alertes_mouvement[str_id] = False
+
+        # 2. MISE À JOUR DE L'INTERFACE
         if str_id in self.balise_cards:
             card_info = self.balise_cards[str_id]
             card_widget = card_info["widget"]
@@ -467,100 +561,31 @@ class DashboardPage(QWidget):
             bat_text = f"Bat: {bat_level}%" if bat_level is not None else "En ligne"
             card_widget.lbl_text.setText(f"{card_info['nom']}\n({str_id})\n{bat_text}")
 
-            status_lines = []
-            is_status_ok = True
-
+            # Batterie
             if bat_level is not None:
                 if bat_level < 30:
-                    status_lines.append(f"Alerte Batterie à ({bat_level}%)")
+                    status_lines.append(f"Batterie Faible ({bat_level}%)")
                     is_status_ok = False
-                    if not self.alertes_batterie.get(str_id, False):
-                        self.ajouter_log(now, f"Balise {str_id}", "Batterie Faible", f"{bat_level}% restants", "#e74c3c")
-                        self.alertes_batterie[str_id] = True
                 else:
                     status_lines.append("Batterie OK")
-                    self.alertes_batterie[str_id] = False
-
-            if lat is not None and lon is not None:
-                # Mise à jour de la carte (On n'a plus besoin de le refaire à la fin !)
-                self.map_widget.update_position(lat, lon, balise_id) 
-                
-                if self.ancrage_position is None:
-                    self.ancrage_position = (lat, lon)
-                    status_lines.append("Ancrage Fixe")
-                else:
-                    dist = distance_balise(self.ancrage_position[0], self.ancrage_position[1], lat, lon)
-                    if dist > self.distance_limite:
-                        status_lines.append("Alerte mouvement")
-                        is_status_ok = False
-                        if not self.alertes_mouvement.get(str_id, False):
-                            self.ajouter_log(now, f"Balise {str_id}", "Alerte Deplacement", f"{int(dist)} metres du point", "#e74c3c")
-                            self.alertes_mouvement[str_id] = True
-                    else:
-                        status_lines.append("Mouvement OK")
-                        self.alertes_mouvement[str_id] = False
 
             status_widget.lbl_text.setText("\n".join(status_lines))
             status_widget.set_status(is_status_ok)
 
-        scenario_text = "En attente API..."
-        scenario_color = QColor("#64748b") 
-        ID_COURSE_ACTUELLE = 1
+        # 3. MISE À JOUR TABLEAUX
+        if str_id in self.team_rows:
+            row = self.team_rows[str_id]
+            if lat:
+                self.table_team.setItem(row, 1, QTableWidgetItem(f"{lat:.5f}")) # Col 1
+            if lon:
+                self.table_team.setItem(row, 2, QTableWidgetItem(f"{lon:.5f}")) # Col 2
+                
+            # --- MISE À JOUR DE LA BATTERIE EN DIRECT (Col 3) ---
+            if bat_level is not None:
+                item_bat = QTableWidgetItem(f"{bat_level}%")
+                item_bat.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                if bat_level < 30:
+                    item_bat.setForeground(QColor("#e74c3c")) # Rouge si faible
+                self.table_team.setItem(row, 3, item_bat)
 
-        try:
-            url = f"{config.API_URL}/api/etat-course/course/{ID_COURSE_ACTUELLE}" 
-            reponse = requests.get(url, headers={"Authorization": f"ApiKey {config.API_KEY}"}, timeout=2, proxies={"http": None, "https": None})
-            if reponse.status_code == 200:
-                donnees_course = reponse.json()
-                etat_equipe = None
-                if isinstance(donnees_course, list):
-                    for etat in donnees_course:
-                        if str(etat.get("id_equipe")) == str_id:
-                            etat_equipe = etat
-                            break
-                elif isinstance(donnees_course, dict) and str(donnees_course.get("id_equipe")) == str_id:
-                    etat_equipe = donnees_course
-
-                if etat_equipe:
-                    est_termine = etat_equipe.get("termine") == True or etat_equipe.get("statut") == "termine"
-                    cible_actuelle = "Terminee" if est_termine else etat_equipe.get("prochaine_etape", f"Balise {etat_equipe.get('id_balise', '?')}")
-                    
-                    if est_termine:
-                        scenario_text = "Course Terminee"
-                        scenario_color = QColor("#27ae60") 
-                    else:
-                        scenario_text = f"Vers {cible_actuelle}"
-                        scenario_color = QColor("#f39c12") 
-
-                    cible_precedente = self.equipes_etat_precedent.get(str_id)
-                    if cible_precedente is not None and cible_precedente != cible_actuelle:
-                        if est_termine:
-                            self.ajouter_log(now, f"Equipe {str_id}", "Course Terminee", "Toutes les balises sont validees !", "#27ae60")
-                        else:
-                            self.ajouter_log(now, f"Equipe {str_id}", "Balise Validee", f"Nouvel objectif : {cible_actuelle}", "#27ae60")
-                    self.equipes_etat_precedent[str_id] = cible_actuelle
-                else:
-                    scenario_text = "Equipe non trouvee"
-        except:
-            pass
-
-        lat_str = f"{lat:.5f}" if lat else "--"
-        lon_str = f"{lon:.5f}" if lon else "--"
-        bat_str = f"{bat_level}%" if bat_level else "--"
-
-        if str_id not in self.team_rows:
-            self.team_rows[str_id] = self.table_team.rowCount()
-            self.table_team.insertRow(self.team_rows[str_id])
-            self.table_team.setItem(self.team_rows[str_id], 0, QTableWidgetItem(str_id))
-
-        row = self.team_rows[str_id]
-        if lat: 
-            self.table_team.setItem(row, 1, QTableWidgetItem(lat_str))
-            self.table_team.setItem(row, 2, QTableWidgetItem(lon_str))
-        if bat_level:
-            self.table_team.setItem(row, 3, QTableWidgetItem(bat_str))
-        
-        item_scen = QTableWidgetItem(scenario_text)
-        item_scen.setForeground(scenario_color)
-        self.table_team.setItem(row, 4, item_scen)
-
+    

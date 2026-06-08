@@ -1,6 +1,5 @@
 import requests
 import config
-# N'oubliez pas que j'ai rajouté QTableWidget, QHeaderView et QTableWidgetItem ici !
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, 
                              QFrame, QLabel, QLineEdit, QPushButton, 
                              QMessageBox, QListWidget, QAbstractItemView, QListWidgetItem,
@@ -139,16 +138,14 @@ class ScenarioPage(QWidget):
 
         main_layout.addLayout(lists_layout, stretch=2)
 
-        # --- BOUTON DE SAUVEGARDE ---
+        # BOUTON DE SAUVEGARDE 
         self.btn_save = QPushButton("Enregistrer la Course et le Parcours")
         self.btn_save.setObjectName("ActionBtn")
         self.btn_save.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_save.clicked.connect(self.enregistrer_course_api)
         main_layout.addWidget(self.btn_save)
 
-        # ==============================================================
-        # NOUVELLE ZONE : TABLEAU DES COURSES (POUR POUVOIR SUPPRIMER)
-        # ==============================================================
+        # TABLEAU DES COURSES (POUR POUVOIR SUPPRIMER)
         recap_frame = QFrame()
         recap_frame.setObjectName("Card")
         recap_layout = QVBoxLayout(recap_frame)
@@ -187,9 +184,7 @@ class ScenarioPage(QWidget):
         self.charger_donnees_api()
 
 
-    # ==========================================
     # LOGIQUE DE L'INTERFACE
-    # ==========================================
     def verifier_etat_boutons(self):
         self.btn_add.setEnabled(bool(self.liste_dispo.currentItem()))
         self.btn_remove.setEnabled(bool(self.liste_parcours.currentItem()))
@@ -217,15 +212,14 @@ class ScenarioPage(QWidget):
             self.liste_dispo.addItem(item)
             self.verifier_etat_boutons()
 
-    # ==========================================
+    
     # COMMUNICATIONS AVEC L'API DOCKER
-    # ==========================================
     def charger_donnees_api(self):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         self.btn_refresh.setEnabled(False)
         self.btn_refresh.setText("Chargement...")
         
-        headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+        headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
         
         # 1. Chargement des balises
         self.liste_dispo.clear()
@@ -259,7 +253,7 @@ class ScenarioPage(QWidget):
         except Exception as e:
             print(f"Erreur equipes : {e}")
             
-        # 3. Chargement des COURSES (NOUVEAU) pour le tableau de suppression
+        # 3. Chargement des COURSES pour le tableau de suppression
         try:
             url_courses = f"{config.API_URL}/api/courses"
             rep_courses = requests.get(url_courses, headers=headers, timeout=5, proxies={"http": None, "https": None})
@@ -287,9 +281,7 @@ class ScenarioPage(QWidget):
         self.verifier_etat_boutons()
 
 
-    # =======================================================
-    # NOUVELLE FONCTION : SUPPRIMER UNE COURSE
-    # =======================================================
+    # FONCTION : SUPPRIMER UNE COURSE
     def supprimer_course(self):
         row = self.table_courses.currentRow()
         
@@ -303,7 +295,7 @@ class ScenarioPage(QWidget):
         id_sql = item_id.data(Qt.ItemDataRole.UserRole)
         nom_course = self.table_courses.item(row, 1).text()
 
-        # --- NOUVEAU : Fenêtre de confirmation 100% en français ---
+        # Fenêtre de confirmation en français
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Confirmation")
         msg_box.setText(f"Voulez-vous vraiment supprimer la course '{nom_course}' ?\nCela supprimera aussi son parcours et ses codes.")
@@ -319,7 +311,7 @@ class ScenarioPage(QWidget):
         # Si l'utilisateur a cliqué sur le bouton "Oui"
         if msg_box.clickedButton() == btn_oui:
             url = f"{config.API_URL}/api/courses/{id_sql}"
-            headers = {"Authorization": f"ApiKey {config.API_KEY}"}
+            headers = {"Authorization": f"Bearer {config.JWT_TOKEN}"}
             
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             try:
@@ -336,13 +328,15 @@ class ScenarioPage(QWidget):
             finally:
                 QApplication.restoreOverrideCursor()
 
-    # =======================================================
     def enregistrer_course_api(self):
         nom_course = self.in_nom_course.text().strip()
         code_course = self.in_code_course.text().strip()
         id_equipe_choisie = self.cb_equipes.currentData()
         
-        headers = {"Authorization": f"ApiKey {config.API_KEY}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {config.JWT_TOKEN}", 
+            "Content-Type": "application/json"
+        }
         
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         self.btn_save.setEnabled(False)
@@ -390,7 +384,6 @@ class ScenarioPage(QWidget):
                 }
                 print(f"[*] DEBUG Payload: {payload_ordre}")
 
-
                 rep_ordre = requests.post(url_ordre, json=payload_ordre, headers=headers, timeout=5, proxies={"http": None, "https": None})
                 if rep_ordre.status_code not in [200, 201]:
                     QMessageBox.warning(self, "Erreur Ordre Balises", f"Erreur lors de l'association de la balise.\nAPI: {rep_ordre.text}")
@@ -410,17 +403,27 @@ class ScenarioPage(QWidget):
             if reponse_code.status_code not in [200, 201]:
                 QMessageBox.warning(self, "Erreur Code Secret", f"Course et parcours crees, mais le code a echoue.\nCode: {reponse_code.status_code}\nDetail: {reponse_code.text}")
 
-            # ==========================================
-            # ETAPE 4 : Mettre à jour la course actuelle de l'équipe
-            # ==========================================
-            url_equipe = f"{config.API_URL}/api/equipes/{id_equipe_choisie}"
             
-            # NOUVEAU : On récupère le nom de l'équipe depuis le menu déroulant
+            # ETAPE 4 : Mettre à jour la course actuelle de l'équipe
+            url_equipe = f"{config.API_URL}/api/equipes/{id_equipe_choisie}"
             nom_equipe_choisie = self.cb_equipes.currentText()
+
+            # On récupère d'abord les données actuelles de l'équipe pour ne pas écraser id_badge
+            id_badge_actuel = None
+            rep_equipe_actuelle = requests.get(
+                url_equipe, 
+                headers=headers, 
+                timeout=5, 
+                proxies={"http": None, "https": None}
+            )
+            if rep_equipe_actuelle.status_code == 200:
+                id_badge_actuel = rep_equipe_actuelle.json().get("id_badge")
+                print(f"[DEBUG] id_badge récupéré avant PUT : {id_badge_actuel}")
             
             payload_equipe = {
-                "nom_equipe": nom_equipe_choisie,  # L'API exige le nom !
-                "id_course_actuelle": id_course
+                "nom_equipe": nom_equipe_choisie,  
+                "id_course_actuelle": id_course,
+                "id_badge": id_badge_actuel  # On remet le badge pour ne pas l'écraser
             }
             
             reponse_equipe = requests.put(url_equipe, json=payload_equipe, headers=headers, timeout=5, proxies={"http": None, "https": None})
@@ -431,10 +434,13 @@ class ScenarioPage(QWidget):
             else:
                 QMessageBox.information(self, "Succes", "La course, le parcours, le code et l'équipe ont ete configures avec succes !")
                 
+                if self.window() and hasattr(self.window(), 'rafraichir_donnees_lora'):
+                    self.window().rafraichir_donnees_lora()
+                    
             self.in_nom_course.clear()
             self.in_code_course.clear()
             self.cb_equipes.setCurrentIndex(0)
-            self.charger_donnees_api() # Cela va rafraîchir le nouveau tableau des courses en bas !
+            self.charger_donnees_api()
 
         except Exception as e:
             QMessageBox.critical(self, "Erreur Systeme", f"Impossible d'enregistrer la course : {e}")
