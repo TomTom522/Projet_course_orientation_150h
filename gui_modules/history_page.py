@@ -86,9 +86,12 @@ class HistoryPage(QWidget):
             if item_type:
                 texte_type = item_type.text()
                 
-                if choix == "Tous les événements" or choix == texte_type:
+                types_connus = {"Position GPS", "Scan RFID", "Batterie"}
+                if choix == "Tous les événements":
                     self.table_systeme.setRowHidden(row, False)
-                elif choix == "Autre" and "📍" not in texte_type and "🏷️" not in texte_type and "🔋" not in texte_type:
+                elif choix == "Autre" and texte_type not in types_connus:
+                    self.table_systeme.setRowHidden(row, False)
+                elif choix == texte_type:
                     self.table_systeme.setRowHidden(row, False)
                 else:
                     self.table_systeme.setRowHidden(row, True)
@@ -163,217 +166,223 @@ class HistoryPage(QWidget):
         # --- 1. SÉLECTION DE LA COURSE VIA L'API ---
         try:
             r_courses = requests.get(f"{config.API_URL}/api/courses", headers=headers, timeout=5)
-            
             if r_courses.status_code == 200:
                 courses = r_courses.json()
                 if not courses:
                     QMessageBox.warning(self, "Attention", "Aucune course n'existe dans la base de données.")
                     return
-                
                 choix_courses = [f"{c['id']} - {c.get('nom_course', 'Course sans nom')}" for c in courses]
-                
-                item, ok = QInputDialog.getItem(self, "Sélection de la course", 
-                                                "Pour quelle course voulez-vous générer le rapport ?", 
+                item, ok = QInputDialog.getItem(self, "Sélection de la course",
+                                                "Pour quelle course voulez-vous générer le rapport ?",
                                                 choix_courses, 0, False)
-                
                 if not ok or not item:
-                    return 
-                    
+                    return
                 id_course_actuelle = int(item.split(" - ")[0])
-                
+                # Récupérer le vrai nom depuis le dict courses
+                course_choisie = next((c for c in courses if str(c.get('id')) == str(id_course_actuelle)), None)
+                nom_course_actuelle = course_choisie.get('nom_course', f'Course {id_course_actuelle}') if course_choisie else f'Course {id_course_actuelle}' 
             else:
                 QMessageBox.warning(self, "Erreur API", "Impossible de récupérer la liste des courses.")
                 return
-                
         except Exception as e:
             QMessageBox.critical(self, "Erreur Réseau", f"Le serveur API est injoignable :\n{e}")
             return
 
-        # --- 2. DEMANDER OÙ SAUVEGARDER LE FICHIER PDF ---
+        # --- 2. RÉCUPÉRER LES ÉQUIPES ET LE PARCOURS ---
+        try:
+            r_equipes = requests.get(f"{config.API_URL}/api/equipes", headers=headers, timeout=5)
+            r_ordre = requests.get(f"{config.API_URL}/api/ordre-balises/course/{id_course_actuelle}", headers=headers, timeout=5)
+            r_balises = requests.get(f"{config.API_URL}/api/balises", headers=headers, timeout=5)
+
+            if r_equipes.status_code != 200:
+                QMessageBox.warning(self, "Erreur API", "Impossible de récupérer les équipes.")
+                return
+            if r_ordre.status_code != 200:
+                QMessageBox.warning(self, "Erreur API", "Impossible de récupérer le parcours de la course.")
+                return
+
+            donnees_equipes = r_equipes.json()
+            donnees_ordre = r_ordre.json()
+            donnees_balises = r_balises.json() if r_balises.status_code == 200 else []
+
+            if not donnees_ordre:
+                QMessageBox.information(self, "Parcours Vide", "Aucune balise configurée pour cette course.")
+                return
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur Réseau", f"Le serveur API est injoignable :\n{e}")
+            return
+
+        # --- 3. DEMANDER OÙ SAUVEGARDER ---
         nom_defaut = f"Rapport_Course_{id_course_actuelle}_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
         chemin_fichier, _ = QFileDialog.getSaveFileName(self, "Sauvegarder le rapport PDF", nom_defaut, "Fichiers PDF (*.pdf)")
-        
         if not chemin_fichier:
             return
 
-        # --- 3. RÉCUPÉRATION DES DONNÉES DE LA COURSE DEPUIS L'API ---
-        try:
-            r_equipes = requests.get(f"{config.API_URL}/api/equipes", headers=headers, timeout=5)
-            if r_equipes.status_code != 200:
-                QMessageBox.warning(self, "Erreur API", "Impossible de récupérer les données des équipes.")
-                return
-            
-            r_ordre = requests.get(f"{config.API_URL}/api/ordre-balises/course/{id_course_actuelle}", headers=headers, timeout=5)
-            if r_ordre.status_code != 200:
-                QMessageBox.warning(self, "Erreur API", "Impossible de récupérer les données de l'ordre des balises. Connection impossible")
-                return
+        # --- 4. CONSTRUIRE LE CLASSEMENT DEPUIS L'HISTORIQUE LOCAL ---
+        # Dictionnaire id_balise_sql → nom_balise
+        map_balises = {str(b.get("id") or b.get("id_balise")): b.get("nom_balise", "Balise ?") for b in donnees_balises}
 
-            r_etat = requests.get(f"{config.API_URL}/api/etat-course/course/{id_course_actuelle}", headers=headers, timeout=5)
+        # Nombre de balises du parcours
+        nb_balises_parcours = len(set(o.get("id_balise") for o in donnees_ordre if o.get("id_balise") is not None))
 
-            if r_etat.status_code != 200:
-                if r_etat.status_code == 404:
-                    donnees_etat = []
-                else:
-                    QMessageBox.warning(self, "Erreur API", f"Impossible de récupérer l'état de la course.\nCode HTTP : {r_etat.status_code}\nDétails : {r_etat.text}")
-                    return
-            else:
-                donnees_etat = r_etat.json()
-            
-            donnees_equipes = r_equipes.json()
-            donnees_ordre = r_ordre.json()
-            
-            # ==========================================
-            # --- VÉRIFICATIONS DES DONNÉES VIDES ---
-            # ==========================================
-            if not donnees_ordre:
-                QMessageBox.information(self, "Parcours Vide", "Aucune balise n'a été configurée pour cette course. Impossible de générer un rapport.")
-                return
-
-            if not donnees_etat:
-                reponse = QMessageBox.question(self, "Course non commencée", 
-                                               "Aucune balise n'a encore été validée par les équipes.\nVoulez-vous quand même générer un rapport vierge ?",
-                                               QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-                if reponse == QMessageBox.StandardButton.No:
-                    return
-                
-        except Exception as e:
-            QMessageBox.critical(self, "Erreur Réseau", f"Le serveur API est injoignable :\n{e}")
-            return
-        
-        # --- 4. TRAITEMENT ET CALCUL DU CLASSEMENT ---
+        # Équipes participant à cette course
         calculs_equipes = {}
-        
         for eq in donnees_equipes:
-            course_eq_id = eq.get('id_course_actuelle', eq.get('id_course'))
+            course_eq_id = eq.get("id_course_actuelle", eq.get("id_course"))
             if str(course_eq_id) == str(id_course_actuelle):
-                eq_id = eq.get('id', eq.get('id_equipe'))
-                if eq_id is not None:
-                    calculs_equipes[eq_id] = {
-                        "nom": eq.get('nom_equipe', f"Équipe {eq_id}"),
-                        "total_balises": 0,
-                        "balises_trouvees": 0,
-                        "premier_passage": None,
-                        "dernier_passage": None,
-                        "penalites": 0 
-                    }
+                nom_eq = eq.get("nom_equipe", f"Équipe {eq.get('id')}")
+                calculs_equipes[nom_eq] = {
+                    "balises_trouvees": 0,
+                    "total_balises": nb_balises_parcours,
+                    "premier_passage": None,
+                    "dernier_passage": None,
+                    "lignes_detail": []
+                }
 
-        for ordre in donnees_ordre:
-            id_eq = ordre.get('id_equipe')
-            if id_eq in calculs_equipes:
-                calculs_equipes[id_eq]['total_balises'] += 1
+        # Parcourir le tableau historique local pour trouver les validations
+        # Les lignes de validation sont ajoutées par gerer_resultat_scan dans main.py
+        # Elles ont le type "Balise Validée" et le détail contient le nom de l'équipe
+        for row in range(self.table_systeme.rowCount()):
+            item_heure   = self.table_systeme.item(row, 0)
+            item_source  = self.table_systeme.item(row, 1)
+            item_evt     = self.table_systeme.item(row, 2)
+            item_details = self.table_systeme.item(row, 3)
+            if not all([item_heure, item_source, item_evt, item_details]):
+                continue
 
-        for etat in donnees_etat:
-            id_eq = etat.get('id_equipe')
-            if etat.get('valide') == True and id_eq in calculs_equipes:
-                calculs_equipes[id_eq]['balises_trouvees'] += 1
-                
-                date_str = etat.get('created_at', '')
-                if date_str:
-                    try:
-                        heure_passage = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
-                        if calculs_equipes[id_eq]['premier_passage'] is None or heure_passage < calculs_equipes[id_eq]['premier_passage']:
-                            calculs_equipes[id_eq]['premier_passage'] = heure_passage
-                        if calculs_equipes[id_eq]['dernier_passage'] is None or heure_passage > calculs_equipes[id_eq]['dernier_passage']:
-                            calculs_equipes[id_eq]['dernier_passage'] = heure_passage
-                    except ValueError:
-                        pass 
+            evt     = item_evt.text()
+            details = item_details.text()
+            heure   = item_heure.text()
+            source  = item_source.text()
 
+            # On cherche les lignes de validation : "Balise Validée" dans l'événement
+            if "Balise Validée" not in evt and "valide" not in evt.lower():
+                continue
+
+            # Extraire le nom de l'équipe depuis les détails
+            # Format typique : "equipe 12 a validé la balise 23 !"
+            nom_eq_trouve = None
+            for nom_eq in calculs_equipes:
+                if nom_eq.lower() in details.lower():
+                    nom_eq_trouve = nom_eq
+                    break
+
+            if nom_eq_trouve is None:
+                continue
+
+            # Convertir l'heure (format HH:MM:SS) en datetime pour le tri
+            try:
+                heure_dt = datetime.strptime(heure, "%H:%M:%S").replace(
+                    year=datetime.now().year,
+                    month=datetime.now().month,
+                    day=datetime.now().day
+                )
+            except ValueError:
+                heure_dt = None
+
+            calculs_equipes[nom_eq_trouve]["balises_trouvees"] += 1
+            calculs_equipes[nom_eq_trouve]["lignes_detail"].append({
+                "heure": heure, "balise": source, "details": details
+            })
+
+            if heure_dt:
+                p = calculs_equipes[nom_eq_trouve]["premier_passage"]
+                d = calculs_equipes[nom_eq_trouve]["dernier_passage"]
+                if p is None or heure_dt < p:
+                    calculs_equipes[nom_eq_trouve]["premier_passage"] = heure_dt
+                if d is None or heure_dt > d:
+                    calculs_equipes[nom_eq_trouve]["dernier_passage"] = heure_dt
+
+        # Si aucune validation trouvée dans l'historique
+        if not calculs_equipes or all(v["balises_trouvees"] == 0 for v in calculs_equipes.values()):
+            reponse = QMessageBox.question(
+                self, "Aucune validation",
+                "Aucune validation n'a été trouvée dans l'historique de cette session.\nGénérer un rapport vierge ?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reponse == QMessageBox.StandardButton.No:
+                return
+
+        # --- 5. CALCULER LE CLASSEMENT ---
         stats_course = []
-        for id_eq, data in calculs_equipes.items():
-            temps_str = "00:00:00"
-            temps_brut = 999999 
-            
-            if data['premier_passage'] and data['dernier_passage']:
-                duree = data['dernier_passage'] - data['premier_passage']
-                temps_str = str(duree).split('.')[0] 
+        for nom_eq, data in calculs_equipes.items():
+            temps_str = "--:--:--"
+            temps_brut = 999999
+
+            if data["premier_passage"] and data["dernier_passage"]:
+                duree = data["dernier_passage"] - data["premier_passage"]
+                temps_str = str(duree).split(".")[0]
                 temps_brut = duree.total_seconds()
+            elif data["premier_passage"]:
+                temps_str = data["premier_passage"].strftime("%H:%M:%S")
+                temps_brut = 0
 
             stats_course.append({
-                "equipe": data['nom'],
+                "equipe": nom_eq,
                 "temps_brut": temps_brut,
                 "temps": temps_str,
                 "balises_format": f"{data['balises_trouvees']}/{data['total_balises']}",
-                "balises_trouvees": data['balises_trouvees'],
-                "penalites": data['penalites']
+                "balises_trouvees": data["balises_trouvees"],
             })
 
-        stats_course.sort(key=lambda x: (-x['balises_trouvees'], x['temps_brut']))
+        stats_course.sort(key=lambda x: (-x["balises_trouvees"], x["temps_brut"]))
+        for i, stat in enumerate(stats_course):
+            stat["position"] = i + 1
 
-        for index, stat in enumerate(stats_course):
-            stat['position'] = index + 1
-
-        # --- Extraction des données du tableau ---
+        # --- 6. GÉNÉRER LE HTML ---
         lignes_html = ""
-        nombre_de_lignes = self.table_systeme.rowCount()
-
-        for row in range(nombre_de_lignes):
-            heure = self.table_systeme.item(row, 0).text() if self.table_systeme.item(row, 0) else ""
-            equipe = self.table_systeme.item(row, 1).text() if self.table_systeme.item(row, 1) else ""
-            evenement = self.table_systeme.item(row, 2).text() if self.table_systeme.item(row, 2) else ""
-            details = self.table_systeme.item(row, 3).text() if self.table_systeme.item(row, 3) else ""
-
-            # On ne met dans le rapport que les lignes importantes (Validations)
-            # Tu peux ajuster le mot clé selon ce qui s'affiche dans ton tableau
-            if "Validée" in evenement or "RFID" in evenement:
-                lignes_html += f"""
-                <tr>
-                    <td style='text-align:center;'>{heure}</td>
-                    <td>{equipe}</td>
-                    <td style='text-align:center;'>{evenement}</td>
-                    <td>{details}</td>
-                </tr>
-                """
+        if stats_course and any(s["balises_trouvees"] > 0 for s in stats_course):
+            for stat in stats_course:
+                row_color = "#f0fdf4" if stat["position"] == 1 else "white"
+                pos = stat["position"]
+                eq = stat["equipe"]
+                tps = stat["temps"]
+                bal = stat["balises_format"]
+                tr_open = f'<tr style="background-color:{row_color}">'
+                td_pos = f'<td style="text-align:center;font-weight:bold">{pos}</td>'
+                td_eq  = f'<td style="font-weight:bold">{eq}</td>'
+                td_tps = f'<td style="text-align:center">{tps}</td>'
+                td_bal = f'<td style="text-align:center">{bal}</td>'
+                lignes_html += tr_open + td_pos + td_eq + td_tps + td_bal + "</tr>"
+        else:
+            lignes_html = "<tr><td colspan='4' style='text-align:center; color:#999; padding:20px;'>Aucun résultat enregistré pour cette course.</td></tr>"
 
         html_content = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Segoe UI', Arial, sans-serif; color: #333; }}
-                h1 {{ color: #27ae60; text-align: center; font-size: 32px; }}
-                h2 {{ color: #2c3e50; font-size: 18px; border-bottom: 2px solid #27ae60; padding-bottom: 5px; margin-top: 30px; }}
-                table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
-                th {{ background-color: #f8fafc; color: #475569; padding: 12px; border-bottom: 3px solid #27ae60; text-align: left; }}
-                td {{ padding: 10px; border-bottom: 1px solid #e2e8f0; }}
-                .footer {{ text-align: right; font-size: 10px; color: #7f8c8d; margin-top: 50px; }}
-            </style>
-        </head>
-        <body>
-            <h1>🏆 Rapport de Course LoRa</h1>
-            <p style='text-align: center; color: #7f8c8d;'>Course ID: {id_course_actuelle} | Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}</p>
-            
+        <html><head><style>
+            body {{ font-family: 'Segoe UI', Arial, sans-serif; color: #333; margin: 20px; }}
+            h1 {{ color: #27ae60; text-align: center; font-size: 28px; }}
+            h2 {{ color: #2c3e50; font-size: 16px; border-bottom: 2px solid #27ae60; padding-bottom: 5px; margin-top: 25px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 15px; }}
+            th {{ background-color: #f8fafc; color: #475569; padding: 10px; border-bottom: 3px solid #27ae60; text-align: left; }}
+            td {{ padding: 10px; border-bottom: 1px solid #e2e8f0; }}
+            .footer {{ text-align: right; font-size: 10px; color: #7f8c8d; margin-top: 40px; }}
+        </style></head><body>
+            <h1>&#127942; Rapport de Course d'orientation</h1>
+            <p style='text-align:center; color:#7f8c8d;'>{nom_course_actuelle} | Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}</p>
             <h2>Classement Final</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th style='text-align:center;'>Position</th>
-                        <th>Nom de l'Équipe</th>
-                        <th style='text-align:center;'>Temps Chronométré</th>
-                        <th style='text-align:center;'>Balises Validées</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {lignes_html}
-                </tbody>
+                <thead><tr>
+                    <th style='text-align:center;'>Position</th>
+                    <th>Nom de l'Équipe</th>
+                    <th style='text-align:center;'>Temps Chronométré</th>
+                    <th style='text-align:center;'>Balises Validées</th>
+                </tr></thead>
+                <tbody>{lignes_html}</tbody>
             </table>
-            <div class="footer">
-                Document généré automatiquement par le Logiciel de Supervision LoRa.
-            </div>
-        </body>
-        </html>
+            <div class="footer">Document généré automatiquement par le Logiciel de Supervision LoRa.</div>
+        </body></html>
         """
 
-        # --- 6. CONVERSION ET SAUVEGARDE DU PDF ---
+        # --- 7. SAUVEGARDER EN PDF ---
         try:
             document = QTextDocument()
             document.setHtml(html_content)
-
             pdf_writer = QPdfWriter(chemin_fichier)
             pdf_writer.setPageSize(QPageSize(QPageSize.PageSizeId.A4))
             pdf_writer.setPageMargins(QMarginsF(15, 15, 15, 15), QPageLayout.Unit.Millimeter)
-
             document.print(pdf_writer)
-            
-            QMessageBox.information(self, "Succès", f"Le rapport PDF a été généré avec succès \n\nEnregistré sous :\n{chemin_fichier}")
-            
+            QMessageBox.information(self, "Succès", f"Le rapport PDF a été généré avec succès !\n\nEnregistré sous :\n{chemin_fichier}")
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Impossible de générer le PDF :\n{str(e)}")
+

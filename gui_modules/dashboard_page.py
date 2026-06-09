@@ -210,7 +210,7 @@ class DashboardPage(QWidget):
         self.last_map_update = 0
         self.setStyleSheet("background-color: #f4f7f6;") 
         
-        # --- ANCRAGE INDIVIDUEL ---
+        # --- CORRECTION ANCRAGE INDIVIDUEL ---
         self.ancrage_positions = {}   # Un dictionnaire pour stocker le départ de CHAQUE balise
         #self.compteurs_ancrage = {}    # Compte les messages avant de valider l'ancrage
         self.distance_limite = 80.0    # Seuil d'alerte (augmenté un peu pour la précision GPS)
@@ -450,29 +450,52 @@ class DashboardPage(QWidget):
         try:
             r_balises = requests.get(f"{config.API_URL}/api/balises", headers=headers, timeout=5)
             r_courses = requests.get(f"{config.API_URL}/api/courses", headers=headers, timeout=5)
-            r_ordres = requests.get(f"{config.API_URL}/api/ordre-balises", headers=headers, timeout=5)
+            r_equipes = requests.get(f"{config.API_URL}/api/equipes", headers=headers, timeout=5)
 
             if r_balises.status_code == 200:
                 balises = r_balises.json()
 
-                # On construit un dictionnaire id_balise → nom_course
+                # Nouvelle stratégie : on passe par les équipes et leurs courses actives
+                # puis on récupère l'ordre des balises via /api/ordre-balises/course/{id}
                 map_balise_course = {}
-                if r_courses.status_code == 200 and r_ordres.status_code == 200:
-                    courses = r_courses.json()
-                    ordres = r_ordres.json()
+                try:
+                    if r_courses.status_code == 200 and r_equipes.status_code == 200:
+                        courses = r_courses.json()
+                        equipes = r_equipes.json()
 
-                    # Dictionnaire id_course → nom_course
-                    map_courses = {
-                        str(c.get('id') or c.get('id_course')): c.get('nom_course', '?')
-                        for c in courses
-                    }
+                        map_courses = {
+                            str(c.get('id') or c.get('id_course')): c.get('nom_course', '?')
+                            for c in courses
+                        }
 
-                    # Pour chaque ordre, on lie id_balise → nom_course
-                    for o in ordres:
-                        id_b = str(o.get('id_balise'))
-                        id_c = str(o.get('id_course'))
-                        if id_b and id_c in map_courses:
-                            map_balise_course[id_b] = map_courses[id_c]
+                        # Récupérer les IDs de courses actives depuis les équipes
+                        ids_courses_actives = set()
+                        for eq in equipes:
+                            id_c = eq.get('id_course_actuelle') or eq.get('id_course')
+                            if id_c:
+                                ids_courses_actives.add(str(id_c))
+
+                        # Pour chaque course active, essayer de récupérer ses balises
+                        for id_c in ids_courses_actives:
+                            nom_course = map_courses.get(id_c, f"Course {id_c}")
+                            for route in [
+                                f"/api/ordre-balises/course/{id_c}",
+                                f"/api/courses/{id_c}/ordre-balises",
+                                f"/api/courses/{id_c}/balises",
+                                f"/api/courses/{id_c}/parcours",
+                            ]:
+                                try:
+                                    r_o = requests.get(f"{config.API_URL}{route}", headers=headers, timeout=3)
+                                    if r_o.status_code == 200:
+                                        for o in r_o.json():
+                                            id_b = o.get('id_balise') or o.get('id_balise_sql')
+                                            if id_b is not None:
+                                                map_balise_course[str(id_b)] = nom_course
+                                        break
+                                except Exception:
+                                    continue
+                except Exception as e:
+                    print(f"Erreur construction map_balise_course : {e}")
 
                 self.table_team.setRowCount(0)
                 self.team_rows.clear()
